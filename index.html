@@ -242,8 +242,50 @@
     <span id="current-student-name" style="font-size:15px; font-weight:600; color:#2563a8; background:#eaf1fa; padding:6px 14px; border-radius:99px; border:1.5px solid #bdd4ef;">-</span>
     <button onclick="changeStudent()" style="font-size:12px; color:#908d84; background:none; border:1px solid #e2e0d8; border-radius:99px; padding:5px 12px; cursor:pointer; font-family:inherit;">変更</button>
     <span id="autosave-indicator" style="font-size:12px; color:#0f6e56; opacity:0; transition:opacity 0.5s;"></span>
+    <button onclick="openTeacherMode()" style="font-size:12px; color:#fff; background:#1a3a1a; border:none; border-radius:99px; padding:6px 14px; cursor:pointer; font-family:inherit; font-weight:600;">👩‍🏫 先生</button>
   </div>
 </header>
+
+<!-- ===== 先生モード画面 ===== -->
+<div id="teacher-modal" style="display:none; position:fixed; inset:0; background:#f5f4f0; z-index:8000; overflow-y:auto; font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Meiryo',sans-serif;">
+  <!-- 先生モードヘッダー -->
+  <div style="background:#1a3a1a; color:#fff; padding:16px 32px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:10;">
+    <div style="font-size:20px;">👩‍🏫</div>
+    <div>
+      <div style="font-size:17px; font-weight:700;">先生モード　— 生徒の回答一覧</div>
+      <div style="font-size:12px; opacity:0.7;" id="teacher-last-updated"></div>
+    </div>
+    <button onclick="closeTeacherMode()" style="margin-left:auto; background:rgba(255,255,255,0.15); color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit;">✕ 閉じる</button>
+  </div>
+
+  <div style="padding:24px 32px;">
+    <!-- 単元・項目選択 -->
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px; align-items:flex-end;">
+      <div>
+        <div style="font-size:12px; font-weight:700; color:#5a5852; margin-bottom:6px;">単元を選ぶ</div>
+        <select id="teacher-unit-select" onchange="updateItemSelect()" style="padding:9px 14px; border:1.5px solid #ccc9be; border-radius:8px; font-size:15px; font-family:inherit; background:#fff; min-width:260px;">
+          <option value="u1">単元1：身のまわりの気体の性質</option>
+          <option value="u2">単元2：気体の集め方</option>
+          <option value="u3">単元3：物質が水にとけるようす</option>
+          <option value="u4">単元4：溶解度と再結晶</option>
+          <option value="u5">単元5：物質の状態変化</option>
+          <option value="u6">単元6：状態変化と体積・質量の変化</option>
+          <option value="u7">単元7：状態変化が起こるときの温度とその利用</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:700; color:#5a5852; margin-bottom:6px;">項目を選ぶ</div>
+        <select id="teacher-item-select" style="padding:9px 14px; border:1.5px solid #ccc9be; border-radius:8px; font-size:15px; font-family:inherit; background:#fff; min-width:220px;"></select>
+      </div>
+      <button onclick="loadTeacherView()" style="background:#1a3a1a; color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit;">🔍 表示する</button>
+      <button onclick="loadAllItems()" style="background:#2563a8; color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit;">📋 全項目まとめて表示</button>
+    </div>
+
+    <!-- 結果表示エリア -->
+    <div id="teacher-results" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;"></div>
+  </div>
+</div>
+
 
 <!-- LEVEL 1: 章ボタン -->
 <div class="chapter-bar">
@@ -1984,6 +2026,213 @@ function loadSeiri() {
 }
 loadSeiri();
 
+
+// ===== 先生モード =====
+const TEACHER_PASSWORD = 'sensei2025';
+
+// 各単元の項目定義
+const unitItems = {
+  u1: [
+    { key: 'u1-yoso', label: '予想' },
+    { key: '_u1_0', label: '実験結果①（色・においなど）' },
+    { key: '_u1_1', label: '実験結果②（水への溶け方）' },
+    { key: '_u1_2', label: '実験結果③（石灰水）' },
+    { key: '_u1_3', label: '考察①' },
+    { key: '_u1_4', label: '考察②' },
+    { key: 'u1-matome', label: 'まとめ' },
+  ],
+  u2: [
+    { key: 'u2-yoso', label: '予想' },
+    { key: '_u2_0', label: '実験結果（噴水実験）' },
+    { key: '_u2_1', label: '考察①（噴水実験の理由）' },
+    { key: '_u2_2', label: '考察②（水上置換できない理由）' },
+    { key: '_u2_3', label: '密度と集め方の関係' },
+    { key: 'u2-matome', label: 'まとめ' },
+  ],
+  u3: [
+    { key: 'u3-yoso', label: '予想' },
+    { key: '_u3_0', label: '実験結果①（水に入れたようす）' },
+    { key: '_u3_1', label: '実験結果②（質量の変化）' },
+    { key: '_u3_2', label: '実験結果③（ろ過後）' },
+    { key: '_u3_3', label: '実験結果④（一晩置いた後）' },
+    { key: '_u3_4', label: '溶質の意味' },
+    { key: '_u3_5', label: '溶媒の意味' },
+    { key: '_u3_6', label: '水溶液の意味' },
+    { key: '_u3_7', label: '練習①（濃度計算）' },
+    { key: '_u3_8', label: '練習②（食塩と水の量）' },
+    { key: '_u3_9', label: '考察①' },
+    { key: '_u3_10', label: '考察②' },
+    { key: '_u3_11', label: '考察③' },
+    { key: '_u3_12', label: '考察④（班での話し合い）' },
+    { key: 'u3-matome', label: 'まとめ' },
+  ],
+  u4: [
+    { key: 'u4-yoso', label: '予想' },
+    { key: '_u4_0', label: '実験結果（食塩）' },
+    { key: '_u4_1', label: '実験結果（硝酸カリウム）' },
+    { key: '_u4_2', label: '溶解度曲線の読み方①' },
+    { key: '_u4_3', label: '溶解度曲線の読み方②' },
+    { key: '_u4_4', label: '例題（再結晶計算）' },
+    { key: '_u4_5', label: '練習①' },
+    { key: '_u4_6', label: '活用問題' },
+    { key: '_u4_7', label: '考察①' },
+    { key: '_u4_8', label: '考察②' },
+    { key: '_u4_9', label: '考察③（班での話し合い）' },
+    { key: 'u4-matome', label: 'まとめ' },
+  ],
+  u5: [
+    { key: 'u5-yoso', label: '予想' },
+    { key: '_u5_0', label: '融解の説明' },
+    { key: '_u5_1', label: '凝固の説明' },
+    { key: '_u5_2', label: '蒸発・沸騰の説明' },
+    { key: '_u5_3', label: '液化の説明' },
+    { key: '_u5_4', label: '昇華の説明' },
+    { key: '_u5_5', label: '考察①' },
+    { key: '_u5_6', label: '考察②' },
+    { key: 'u5-matome', label: 'まとめ' },
+  ],
+  u6: [
+    { key: 'u6-yoso', label: '予想' },
+    { key: '_u6_0', label: '実験結果（質量・液体）' },
+    { key: '_u6_1', label: '実験結果（質量・固体）' },
+    { key: '_u6_2', label: '実験結果（体積・スケッチ）' },
+    { key: '_u6_3', label: '水の特別な性質まとめ' },
+    { key: '_u6_4', label: '考察①' },
+    { key: '_u6_5', label: '考察②' },
+    { key: 'u6-matome', label: 'まとめ' },
+  ],
+  u7: [
+    { key: 'u7-yoso', label: '予想' },
+    { key: '_u7_0', label: 'グラフの読み取り①' },
+    { key: '_u7_1', label: 'グラフの読み取り②' },
+    { key: '_u7_2', label: '実験結果①（1本目）' },
+    { key: '_u7_3', label: '実験結果②（2本目）' },
+    { key: '_u7_4', label: '実験結果③（3本目）' },
+    { key: '_u7_5', label: '蒸留の利用例' },
+    { key: '_u7_6', label: '石油の分留' },
+    { key: '_u7_7', label: '考察①' },
+    { key: '_u7_8', label: '考察②' },
+    { key: '_u7_9', label: '考察③' },
+    { key: 'u7-matome', label: 'まとめ' },
+  ],
+};
+
+function openTeacherMode() {
+  const pw = prompt('先生用パスワードを入力してください：');
+  if (pw !== TEACHER_PASSWORD) {
+    if (pw !== null) alert('パスワードが違います');
+    return;
+  }
+  document.getElementById('teacher-modal').style.display = 'block';
+  document.getElementById('teacher-last-updated').textContent = '最終更新：' + new Date().toLocaleString('ja-JP');
+  updateItemSelect();
+}
+
+function closeTeacherMode() {
+  document.getElementById('teacher-modal').style.display = 'none';
+}
+
+function updateItemSelect() {
+  const unit = document.getElementById('teacher-unit-select').value;
+  const itemSelect = document.getElementById('teacher-item-select');
+  itemSelect.innerHTML = '';
+  (unitItems[unit] || []).forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item.key;
+    opt.textContent = item.label;
+    itemSelect.appendChild(opt);
+  });
+}
+
+async function loadTeacherView() {
+  const unit = document.getElementById('teacher-unit-select').value;
+  const itemKey = document.getElementById('teacher-item-select').value;
+  const itemLabel = document.getElementById('teacher-item-select').selectedOptions[0]?.textContent || itemKey;
+  const resultsEl = document.getElementById('teacher-results');
+  resultsEl.innerHTML = '<div style="color:#908d84;font-size:14px;grid-column:1/-1;">読み込み中...</div>';
+
+  try {
+    const db = window._fbDb;
+    const snapshot = await window._fbGet(window._fbChild(window._fbRef(db), 'notebooks'));
+    if (!snapshot.exists()) {
+      resultsEl.innerHTML = '<div style="color:#908d84;grid-column:1/-1;">データがありません</div>';
+      return;
+    }
+    const all = snapshot.val();
+    resultsEl.innerHTML = `<div style="grid-column:1/-1; font-size:16px; font-weight:700; color:#1a1917; margin-bottom:4px;">📌 ${itemLabel}</div>`;
+    let count = 0;
+    Object.entries(all).forEach(([safeName, units]) => {
+      const unitData = units[unit];
+      if (!unitData) return;
+      const val = unitData[itemKey];
+      if (!val && val !== 0) return;
+      count++;
+      const card = document.createElement('div');
+      card.style.cssText = 'background:#fff; border:1px solid #e2e0d8; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:8px;';
+      card.innerHTML = `
+        <div style="font-size:13px; font-weight:700; color:#2563a8; background:#eaf1fa; padding:4px 12px; border-radius:99px; display:inline-block; width:fit-content;">${safeName.replace(/_/g,' ')}</div>
+        <div style="font-size:15px; color:#1a1917; line-height:1.75; white-space:pre-wrap;">${val || '（未記入）'}</div>
+      `;
+      resultsEl.appendChild(card);
+    });
+    if (count === 0) {
+      resultsEl.innerHTML += '<div style="color:#908d84;font-size:14px;grid-column:1/-1;">まだ回答がありません</div>';
+    }
+  } catch(e) {
+    resultsEl.innerHTML = '<div style="color:#cc3300;grid-column:1/-1;">読み込みエラー：' + e.message + '</div>';
+  }
+}
+
+async function loadAllItems() {
+  const unit = document.getElementById('teacher-unit-select').value;
+  const items = unitItems[unit] || [];
+  const resultsEl = document.getElementById('teacher-results');
+  resultsEl.innerHTML = '<div style="color:#908d84;font-size:14px;grid-column:1/-1;">読み込み中...</div>';
+
+  try {
+    const db = window._fbDb;
+    const snapshot = await window._fbGet(window._fbChild(window._fbRef(db), 'notebooks'));
+    if (!snapshot.exists()) {
+      resultsEl.innerHTML = '<div style="color:#908d84;grid-column:1/-1;">データがありません</div>';
+      return;
+    }
+    const all = snapshot.val();
+    resultsEl.innerHTML = '';
+    resultsEl.style.gridTemplateColumns = '1fr';
+
+    items.forEach(item => {
+      const section = document.createElement('div');
+      section.style.cssText = 'background:#f9f8f5; border:1.5px solid #e2e0d8; border-radius:12px; padding:18px 20px; margin-bottom:8px;';
+      section.innerHTML = `<div style="font-size:15px; font-weight:700; color:#1a1917; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #e2e0d8;">📌 ${item.label}</div>`;
+      const grid = document.createElement('div');
+      grid.style.cssText = 'display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px;';
+
+      let count = 0;
+      Object.entries(all).forEach(([safeName, units]) => {
+        const unitData = units[unit];
+        if (!unitData) return;
+        const val = unitData[item.key];
+        if (!val && val !== 0) return;
+        count++;
+        const card = document.createElement('div');
+        card.style.cssText = 'background:#fff; border:1px solid #e2e0d8; border-radius:8px; padding:12px 14px;';
+        card.innerHTML = `
+          <div style="font-size:12px; font-weight:700; color:#2563a8; margin-bottom:6px;">${safeName.replace(/_/g,' ')}</div>
+          <div style="font-size:14px; color:#1a1917; line-height:1.75; white-space:pre-wrap;">${val}</div>
+        `;
+        grid.appendChild(card);
+      });
+
+      if (count === 0) {
+        grid.innerHTML = '<div style="color:#908d84;font-size:13px;">まだ回答がありません</div>';
+      }
+      section.appendChild(grid);
+      resultsEl.appendChild(section);
+    });
+  } catch(e) {
+    resultsEl.innerHTML = '<div style="color:#cc3300;grid-column:1/-1;">読み込みエラー：' + e.message + '</div>';
+  }
+}
 
 // 生徒変更ボタン
 function changeStudent() {
