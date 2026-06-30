@@ -7,7 +7,7 @@
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC3GRbZSxb7R-dbmvaSk_b3ALeOH24Afb4",
@@ -27,6 +27,7 @@
   window._fbSet = set;
   window._fbGet = get;
   window._fbChild = child;
+  window._fbOnValue = onValue;
 </script>
 <style>
   :root {
@@ -155,6 +156,15 @@
   .answer-toggle-btn { margin-top: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #7a4b0a; background: var(--amber-bg); border: 1.5px solid #c0a830; border-radius: 99px; padding: 6px 16px; cursor: pointer; }
   .answer-toggle-btn:hover { background: #fbe5b8; }
   .answer-box { margin-top: 10px; background: #fffbe8; border: 1.5px solid #c0a830; border-radius: var(--radius); padding: 12px 16px; font-size: 15px; color: #4a2d08; line-height: 1.9; }
+
+  .livefeed { margin-top: 10px; background: #f5f8fc; border: 1.5px solid #c8d8ec; border-radius: var(--radius); padding: 12px 14px; }
+  .livefeed-header { font-size: 13px; font-weight: 700; color: #2563a8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .livefeed-dot { width: 7px; height: 7px; border-radius: 50%; background: #2ecc71; display: inline-block; animation: livefeed-pulse 1.6s infinite; }
+  @keyframes livefeed-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .livefeed-item { background: #fff; border: 1px solid #e2e0d8; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; font-size: 14px; color: #333; line-height: 1.6; }
+  .livefeed-item:last-child { margin-bottom: 0; }
+  .livefeed-name { font-weight: 700; color: #2563a8; font-size: 12px; display: block; margin-bottom: 2px; }
+  .livefeed-empty { font-size: 13px; color: #908d84; }
 
   .info-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
   .info-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; font-size: 15px; color: var(--text-sub); line-height: 1.75; }
@@ -366,6 +376,14 @@
           <div class="field-label">予想</div>
           <div class="field-q">この章をくわしく学ぶ前に、今の自分の知識や経験から考えてみよう。あとで（章のおわりに）この予想を見直して、どう変わったか比べます。</div>
           <textarea id="gas-yoso-text" placeholder="自分の考えを書いてみよう"></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <span style="font-size:11px; color:#908d84;">✏️ 内容はいつでも書き直せます（自動で保存されます）</span>
+            <button type="button" onclick="clearOwnAnswer('gas-yoso-text')" style="font-size:11px; padding:4px 10px; border:1px solid #e0a0a0; border-radius:6px; background:#fff0f0; color:#cc3300; cursor:pointer; font-family:inherit;">🗑️ 消す</button>
+          </div>
+          <div class="livefeed">
+            <div class="livefeed-header"><span class="livefeed-dot"></span>👥 みんなの予想（リアルタイム）</div>
+            <div id="livefeed-gas-yoso"><div class="livefeed-empty">読み込み中...</div></div>
+          </div>
         </div>
         <button class="save-btn save-btn-gas" onclick="saveData('gas-yoso')">💾 このノートを保存する</button>
       </div>
@@ -607,6 +625,14 @@
           <div class="field-label">学習後のまとめ</div>
           <div class="field-q">単元1・単元2で学んだこと（気体の性質・集め方など）をふまえて、この章の課題にあらためて答えよう。章のはじめに書いた予想と、何が変わったかも書いてみよう。</div>
           <textarea id="gas-matome-text" placeholder="自分の考えを書いてみよう"></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <span style="font-size:11px; color:#908d84;">✏️ 内容はいつでも書き直せます（自動で保存されます）</span>
+            <button type="button" onclick="clearOwnAnswer('gas-matome-text')" style="font-size:11px; padding:4px 10px; border:1px solid #e0a0a0; border-radius:6px; background:#fff0f0; color:#cc3300; cursor:pointer; font-family:inherit;">🗑️ 消す</button>
+          </div>
+          <div class="livefeed">
+            <div class="livefeed-header"><span class="livefeed-dot"></span>👥 みんなのまとめ（リアルタイム）</div>
+            <div id="livefeed-gas-matome"><div class="livefeed-empty">読み込み中...</div></div>
+          </div>
         </div>
         <button class="save-btn save-btn-gas" onclick="saveData('gas-matome')">💾 このノートを保存する</button>
       </div>
@@ -655,6 +681,14 @@
           <div class="field-label">予想</div>
           <div class="field-q">この章をくわしく学ぶ前に、今の自分の知識や経験から考えてみよう。あとで（章のおわりに）この予想を見直して、どう変わったか比べます。</div>
           <textarea id="sol-yoso-text" placeholder="自分の考えを書いてみよう"></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <span style="font-size:11px; color:#908d84;">✏️ 内容はいつでも書き直せます（自動で保存されます）</span>
+            <button type="button" onclick="clearOwnAnswer('sol-yoso-text')" style="font-size:11px; padding:4px 10px; border:1px solid #e0a0a0; border-radius:6px; background:#fff0f0; color:#cc3300; cursor:pointer; font-family:inherit;">🗑️ 消す</button>
+          </div>
+          <div class="livefeed">
+            <div class="livefeed-header"><span class="livefeed-dot"></span>👥 みんなの予想（リアルタイム）</div>
+            <div id="livefeed-sol-yoso"><div class="livefeed-empty">読み込み中...</div></div>
+          </div>
         </div>
         <button class="save-btn save-btn-sol" onclick="saveData('sol-yoso')">💾 このノートを保存する</button>
       </div>
@@ -1609,6 +1643,14 @@
           <div class="field-label">学習後のまとめ</div>
           <div class="field-q">単元1・単元2で学んだこと（とける・水溶液・溶解度・再結晶など）をふまえて、この章の課題にあらためて答えよう。章のはじめに書いた予想と、何が変わったかも書いてみよう。</div>
           <textarea id="sol-matome-text" placeholder="自分の考えを書いてみよう"></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <span style="font-size:11px; color:#908d84;">✏️ 内容はいつでも書き直せます（自動で保存されます）</span>
+            <button type="button" onclick="clearOwnAnswer('sol-matome-text')" style="font-size:11px; padding:4px 10px; border:1px solid #e0a0a0; border-radius:6px; background:#fff0f0; color:#cc3300; cursor:pointer; font-family:inherit;">🗑️ 消す</button>
+          </div>
+          <div class="livefeed">
+            <div class="livefeed-header"><span class="livefeed-dot"></span>👥 みんなのまとめ（リアルタイム）</div>
+            <div id="livefeed-sol-matome"><div class="livefeed-empty">読み込み中...</div></div>
+          </div>
         </div>
         <button class="save-btn save-btn-sol" onclick="saveData('sol-matome')">💾 このノートを保存する</button>
       </div>
@@ -1661,6 +1703,14 @@
           <div class="field-label">予想</div>
           <div class="field-q">この章をくわしく学ぶ前に、今の自分の知識や経験から考えてみよう。あとで（章のおわりに）この予想を見直して、どう変わったか比べます。</div>
           <textarea id="sta-yoso-text" placeholder="自分の考えを書いてみよう"></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <span style="font-size:11px; color:#908d84;">✏️ 内容はいつでも書き直せます（自動で保存されます）</span>
+            <button type="button" onclick="clearOwnAnswer('sta-yoso-text')" style="font-size:11px; padding:4px 10px; border:1px solid #e0a0a0; border-radius:6px; background:#fff0f0; color:#cc3300; cursor:pointer; font-family:inherit;">🗑️ 消す</button>
+          </div>
+          <div class="livefeed">
+            <div class="livefeed-header"><span class="livefeed-dot"></span>👥 みんなの予想（リアルタイム）</div>
+            <div id="livefeed-sta-yoso"><div class="livefeed-empty">読み込み中...</div></div>
+          </div>
         </div>
         <button class="save-btn save-btn-sta" onclick="saveData('sta-yoso')">💾 このノートを保存する</button>
       </div>
@@ -2220,8 +2270,10 @@
             <div class="field-label">グラフから読み取れることをまとめよう</div>
             <textarea class="sm" placeholder="0℃のときは…100℃のときは…温度が変わらない理由は..."></textarea>
             <div class="field-label" style="margin-top:10px;">予想：水とエタノールの混合物を加熱したら、このグラフはどうなると思う？</div>
-            <div style="font-size:13px; color:#5a5852; margin-bottom:8px;">グラフの中をクリックして、自分の予想する温度変化の線をかいてみよう。</div>
-            <svg class="graph-plot" data-graph="g0" viewBox="0 0 400 200" width="100%" style="background:#fff;border:1px solid #ccc;border-radius:8px;margin:6px 0;cursor:crosshair;" onclick="addGraphPoint(event,'g0')">
+            <div style="font-size:13px; color:#5a5852; margin-bottom:8px;">グラフの中を指やマウスでなぞると、ペンで線をかくように予想の曲線をかけます。</div>
+            <svg class="graph-plot" data-graph="g0" viewBox="0 0 400 200" width="100%" style="background:#fff;border:1px solid #ccc;border-radius:8px;margin:6px 0;cursor:crosshair;touch-action:none;"
+              onmousedown="startDraw(event,'g0')" onmousemove="moveDraw(event,'g0')" onmouseup="endDraw('g0')" onmouseleave="endDraw('g0')"
+              ontouchstart="startDraw(event,'g0')" ontouchmove="moveDraw(event,'g0')" ontouchend="endDraw('g0')">
               <line x1="50" y1="15" x2="50" y2="170" stroke="#aaa" stroke-width="1.5" pointer-events="none"/>
               <line x1="50" y1="170" x2="385" y2="170" stroke="#aaa" stroke-width="1.5" pointer-events="none"/>
               <text x="44" y="174" font-size="8" text-anchor="end" fill="#888" pointer-events="none">0</text>
@@ -2273,6 +2325,10 @@
             <input type="hidden" id="graph-g0-data" value="">
             <div class="field-label" style="margin-top:10px;">そう予想した理由</div>
             <textarea class="sm" placeholder="水だけのときと同じように、温度が一定になるところがあると思う？それとも…自分の予想を書いてみよう"></textarea>
+            <div class="livefeed">
+              <div class="livefeed-header"><span class="livefeed-dot"></span>👥 みんなの予想グラフ（リアルタイム）</div>
+              <div id="livefeed-graph-g0"><div class="livefeed-empty">読み込み中...</div></div>
+            </div>
           </div>
         </div>
 
@@ -2463,6 +2519,14 @@
           <div class="field-label">学習後のまとめ</div>
           <div class="field-q">単元1〜3で学んだこと（状態変化・体積と質量・沸点と融点など）をふまえて、この章の課題にあらためて答えよう。章のはじめに書いた予想と、何が変わったかも書いてみよう。</div>
           <textarea id="sta-matome-text" placeholder="自分の考えを書いてみよう"></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <span style="font-size:11px; color:#908d84;">✏️ 内容はいつでも書き直せます（自動で保存されます）</span>
+            <button type="button" onclick="clearOwnAnswer('sta-matome-text')" style="font-size:11px; padding:4px 10px; border:1px solid #e0a0a0; border-radius:6px; background:#fff0f0; color:#cc3300; cursor:pointer; font-family:inherit;">🗑️ 消す</button>
+          </div>
+          <div class="livefeed">
+            <div class="livefeed-header"><span class="livefeed-dot"></span>👥 みんなのまとめ（リアルタイム）</div>
+            <div id="livefeed-sta-matome"><div class="livefeed-empty">読み込み中...</div></div>
+          </div>
         </div>
         <button class="save-btn save-btn-sta" onclick="saveData('sta-matome')">💾 このノートを保存する</button>
       </div>
@@ -2507,39 +2571,76 @@ function switchUnit(ch, unit) {
 
 // ===== グラフ：クリックでプロット =====
 const graphHistory = { g0: [], g1: [] };
+const graphPenMode = { g0: true }; // g0はペンでなぞって自由に曲線をかくモード
+const drawingState = {};
 
 function renderGraphPoints(graphId) {
   const g = document.getElementById('graph-points-' + graphId);
   const line = document.getElementById('graph-line-' + graphId);
   if (!g || !line) return;
   g.innerHTML = '';
-  const sorted = [...graphHistory[graphId]].sort((a, b) => a.x - b.x);
-  sorted.forEach(p => {
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', p.x);
-    circle.setAttribute('cy', p.y);
-    circle.setAttribute('r', 4);
-    circle.setAttribute('fill', '#e03030');
-    circle.setAttribute('stroke', '#fff');
-    circle.setAttribute('stroke-width', '1');
-    circle.setAttribute('pointer-events', 'none');
-    g.appendChild(circle);
-  });
-  line.setAttribute('points', sorted.map(p => p.x + ',' + p.y).join(' '));
+  const isPen = graphPenMode[graphId];
+  const pts = isPen ? graphHistory[graphId] : [...graphHistory[graphId]].sort((a, b) => a.x - b.x);
+  if (!isPen) {
+    pts.forEach(p => {
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', p.x);
+      circle.setAttribute('cy', p.y);
+      circle.setAttribute('r', 4);
+      circle.setAttribute('fill', '#e03030');
+      circle.setAttribute('stroke', '#fff');
+      circle.setAttribute('stroke-width', '1');
+      circle.setAttribute('pointer-events', 'none');
+      g.appendChild(circle);
+    });
+  }
+  line.setAttribute('points', pts.map(p => p.x + ',' + p.y).join(' '));
   syncGraphData(graphId);
+}
+
+function svgLocalPoint(svg, evt) {
+  const pt = svg.createSVGPoint();
+  const t = evt.touches && evt.touches.length ? evt.touches[0] : evt;
+  pt.x = t.clientX;
+  pt.y = t.clientY;
+  const ctm = svg.getScreenCTM().inverse();
+  const loc = pt.matrixTransform(ctm);
+  return {
+    x: Math.max(50, Math.min(385, loc.x)),
+    y: Math.max(15, Math.min(170, loc.y))
+  };
 }
 
 function addGraphPoint(evt, graphId) {
   const svg = evt.currentTarget;
-  const pt = svg.createSVGPoint();
-  pt.x = evt.clientX;
-  pt.y = evt.clientY;
-  const ctm = svg.getScreenCTM().inverse();
-  const loc = pt.matrixTransform(ctm);
-  const x = Math.max(50, Math.min(385, loc.x));
-  const y = Math.max(15, Math.min(170, loc.y));
-  graphHistory[graphId].push({ x, y });
+  const p = svgLocalPoint(svg, evt);
+  graphHistory[graphId].push(p);
   renderGraphPoints(graphId);
+  triggerAutoSaveForCurrentUnit();
+}
+
+// ===== ペンでなぞって曲線をかく（フリーハンド） =====
+function startDraw(evt, graphId) {
+  evt.preventDefault();
+  drawingState[graphId] = true;
+  const svg = evt.currentTarget;
+  const p = svgLocalPoint(svg, evt);
+  graphHistory[graphId].push(p);
+  renderGraphPoints(graphId);
+}
+
+function moveDraw(evt, graphId) {
+  if (!drawingState[graphId]) return;
+  evt.preventDefault();
+  const svg = evt.currentTarget;
+  const p = svgLocalPoint(svg, evt);
+  graphHistory[graphId].push(p);
+  renderGraphPoints(graphId);
+}
+
+function endDraw(graphId) {
+  if (!drawingState[graphId]) return;
+  drawingState[graphId] = false;
   triggerAutoSaveForCurrentUnit();
 }
 
@@ -2726,7 +2827,7 @@ async function selectStudent(name) {
   document.getElementById('current-student-name').textContent = name;
   await loadAllFromFirebase(name);
   // 初期表示
-  switchUnit('gas', 'u1');
+  switchUnit('gas', 'gas-yoso');
   const u3btn = document.getElementById('utab-u3');
   if (u3btn) u3btn.className = 'unit-card';
   const u4btn = document.getElementById('utab-u4');
@@ -2786,6 +2887,86 @@ async function loadAllFromFirebase(name) {
   } catch(e) {
     console.error('Firebase load error:', e);
   }
+}
+
+// ===== みんなの意見をリアルタイムで表示（特定の項目だけ） =====
+function clearOwnAnswer(fieldId) {
+  if (!confirm('この回答を消去します。クラスのみんなにも表示されなくなりますが、よろしいですか？')) return;
+  const el = document.getElementById(fieldId);
+  if (!el) return;
+  el.value = '';
+  triggerAutoSaveForCurrentUnit();
+}
+
+function escapeHtmlForFeed(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function attachLiveTextFeed(containerId, unit, key) {
+  const notebooksRef = window._fbRef(window._fbDb, 'notebooks');
+  window._fbOnValue(notebooksRef, (snapshot) => {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (!snapshot.exists()) { el.innerHTML = '<div class="livefeed-empty">まだ回答がありません</div>'; return; }
+    const all = snapshot.val();
+    let html = '';
+    Object.entries(all).forEach(([safeName, units]) => {
+      const val = units && units[unit] && units[unit][key];
+      if (!val) return;
+      const name = safeName.replace(/_/g, ' ');
+      if (currentStudentName && name === currentStudentName) return; // 自分の回答は自分の欄にすでにあるので除く
+      html += `<div class="livefeed-item"><span class="livefeed-name">${escapeHtmlForFeed(name)}</span>${escapeHtmlForFeed(val)}</div>`;
+    });
+    el.innerHTML = html || '<div class="livefeed-empty">まだ回答がありません</div>';
+  });
+}
+
+function attachLiveGraphFeed(containerId, unit, key) {
+  const notebooksRef = window._fbRef(window._fbDb, 'notebooks');
+  window._fbOnValue(notebooksRef, (snapshot) => {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (!snapshot.exists()) { el.innerHTML = '<div class="livefeed-empty">まだグラフがありません</div>'; return; }
+    const all = snapshot.val();
+    let entries = [];
+    Object.entries(all).forEach(([safeName, units]) => {
+      const val = units && units[unit] && units[unit][key];
+      if (!val) return;
+      const name = safeName.replace(/_/g, ' ');
+      if (currentStudentName && name === currentStudentName) return;
+      try {
+        const points = JSON.parse(val);
+        if (points && points.length > 0) entries.push({ name, points });
+      } catch(e) {}
+    });
+    if (entries.length === 0) { el.innerHTML = '<div class="livefeed-empty">まだグラフがありません</div>'; return; }
+    let svgLines = '';
+    let legend = '';
+    entries.forEach((entry, i) => {
+      const color = classGraphColors[i % classGraphColors.length];
+      const sorted = [...entry.points].sort((a, b) => a.x - b.x);
+      const pts = sorted.map(p => p.x + ',' + p.y).join(' ');
+      svgLines += `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" opacity="0.85"/>`;
+      legend += `<span style="display:inline-flex; align-items:center; gap:4px; margin-right:10px; font-size:11px; color:#333;"><span style="display:inline-block; width:12px; height:3px; background:${color};"></span>${escapeHtmlForFeed(entry.name)}</span>`;
+    });
+    el.innerHTML = `
+      <svg viewBox="0 0 400 200" width="100%" style="background:#fff;border:1px solid #ccc;border-radius:8px;">
+        <line x1="50" y1="15" x2="50" y2="170" stroke="#aaa" stroke-width="1.5"/>
+        <line x1="50" y1="170" x2="385" y2="170" stroke="#aaa" stroke-width="1.5"/>
+        <text x="44" y="174" font-size="8" text-anchor="end" fill="#888">0</text>
+        <text x="44" y="20" font-size="8" text-anchor="end" fill="#888">100</text>
+        <text x="217" y="196" font-size="9" text-anchor="middle" fill="#555">加熱した時間（分）</text>
+        <line x1="50" y1="80" x2="385" y2="80" stroke="#7b3fa0" stroke-width="1" stroke-dasharray="5,3" opacity="0.4"/>
+        <text x="387" y="83" font-size="8" fill="#7b3fa0">78℃</text>
+        <line x1="50" y1="20" x2="385" y2="20" stroke="#e03030" stroke-width="1" stroke-dasharray="5,3" opacity="0.4"/>
+        <text x="387" y="23" font-size="8" fill="#e03030">100℃</text>
+        ${svgLines}
+      </svg>
+      <div style="margin-top:8px; line-height:1.9;">${legend}</div>
+    `;
+  });
 }
 
 // Firebaseにデータ保存
@@ -3577,6 +3758,15 @@ function changeStudent() {
     loadStudentList();
   }
 }
+
+// ===== みんなの意見をリアルタイムで表示（常時起動） =====
+attachLiveTextFeed('livefeed-gas-yoso', 'gas-yoso', 'gas-yoso-text');
+attachLiveTextFeed('livefeed-gas-matome', 'gas-matome', 'gas-matome-text');
+attachLiveTextFeed('livefeed-sol-yoso', 'sol-yoso', 'sol-yoso-text');
+attachLiveTextFeed('livefeed-sol-matome', 'sol-matome', 'sol-matome-text');
+attachLiveTextFeed('livefeed-sta-yoso', 'sta-yoso', 'sta-yoso-text');
+attachLiveTextFeed('livefeed-sta-matome', 'sta-matome', 'sta-matome-text');
+attachLiveGraphFeed('livefeed-graph-g0', 'u7', 'graph-g0-data');
 </script>
 </body>
 </html>
