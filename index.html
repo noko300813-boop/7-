@@ -84,6 +84,9 @@
   .unit-card.active-gas .uc-num { color: var(--c-gas); }
   .unit-card.active-sol .uc-num { color: var(--c-sol); }
   .unit-card .uc-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .unit-card-edge { background: #fdf8e8; border-color: #d8c180; flex: 0 0 150px; }
+  .unit-card-edge .uc-num { color: #8a6a10; }
+  .unit-card-edge.active-sol, .unit-card-edge.active-gas, .unit-card-edge.active-sta { background: #fdf0c8; border-color: #c0a830; }
 
   /* NOTEBOOK AREA */
   .notebook-area { background: var(--surface); border-top: 1px solid var(--border); }
@@ -111,6 +114,7 @@
   .card-title { font-size: 17px; font-weight: 600; color: var(--text); }
 
   .highlight { border-left: 4px solid; border-radius: 0 var(--radius) var(--radius) 0; padding: 12px 16px; font-size: 16px; line-height: 1.75; margin-bottom: 14px; }
+  .highlight.task-highlight { font-size: 19px; font-weight: 700; padding: 16px 20px; border-left-width: 6px; }
   .hl-gas { background: var(--c-gas-bg); border-color: var(--c-gas); color: #1a3a60; }
   .hl-sol { background: var(--c-sol-bg); border-color: var(--c-sol); color: #0a3328; }
   .hl-amber { background: var(--amber-bg); border-color: #c07a20; color: #4a2d08; }
@@ -140,6 +144,17 @@
   td textarea::placeholder { color: #b8b4a8; }
   td textarea:focus { box-shadow: inset 0 0 0 2px var(--c-gas); outline: none; border-radius: var(--radius); }
   .panel-sol td textarea:focus { box-shadow: inset 0 0 0 2px var(--c-sol); }
+  .quiz-select { font-family:inherit; font-size:15px; padding:5px 10px; border:1.5px solid #c0a830; border-radius:6px; background:#fffbe8; color:#5a4a10; cursor:pointer; margin:0 2px; }
+  .quiz-select:focus { outline:none; border-color:#0f6e56; }
+  .quiz-select.correct { border-color:#0f6e56; background:#e4f5ee; color:#0f6e56; font-weight:700; }
+  .quiz-select.wrong { border-color:#cc3300; background:#fdeeea; color:#cc3300; }
+  .quiz-result { font-size:14px; font-weight:700; margin-left:4px; }
+  .quiz-result.correct { color:#0f6e56; }
+  .quiz-result.wrong { color:#cc3300; }
+
+  .answer-toggle-btn { margin-top: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #7a4b0a; background: var(--amber-bg); border: 1.5px solid #c0a830; border-radius: 99px; padding: 6px 16px; cursor: pointer; }
+  .answer-toggle-btn:hover { background: #fbe5b8; }
+  .answer-box { margin-top: 10px; background: #fffbe8; border: 1.5px solid #c0a830; border-radius: var(--radius); padding: 12px 16px; font-size: 15px; color: #4a2d08; line-height: 1.9; }
 
   .info-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
   .info-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; font-size: 15px; color: var(--text-sub); line-height: 1.75; }
@@ -238,6 +253,7 @@
     <p>中学1年生</p>
   </div>
   <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+    <a href="https://www.lentrance.com/reader/portal.html?05b8405bc#bookshelf" target="_blank" style="font-size:13px; color:#2563a8; background:#eaf1fa; border:1.5px solid #bdd4ef; border-radius:99px; padding:6px 14px; text-decoration:none; font-weight:600; display:inline-flex; align-items:center; gap:5px;">📘 デジタル教科書を開く</a>
     <span style="font-size:13px; color:#5a5852;">👤</span>
     <span id="current-student-name" style="font-size:15px; font-weight:600; color:#2563a8; background:#eaf1fa; padding:6px 14px; border-radius:99px; border:1.5px solid #bdd4ef;">-</span>
     <button onclick="changeStudent()" style="font-size:12px; color:#908d84; background:none; border:1px solid #e2e0d8; border-radius:99px; padding:5px 12px; cursor:pointer; font-family:inherit;">変更</button>
@@ -264,13 +280,19 @@
       <div>
         <div style="font-size:12px; font-weight:700; color:#5a5852; margin-bottom:6px;">単元を選ぶ</div>
         <select id="teacher-unit-select" onchange="updateItemSelect()" style="padding:9px 14px; border:1.5px solid #ccc9be; border-radius:8px; font-size:15px; font-family:inherit; background:#fff; min-width:260px;">
+          <option value="gas-yoso">第2章はじめ：予想</option>
           <option value="u1">単元1：身のまわりの気体の性質</option>
           <option value="u2">単元2：気体の集め方</option>
+          <option value="gas-matome">第2章おわり：まとめ</option>
+          <option value="sol-yoso">第3章はじめ：予想</option>
           <option value="u3">単元3：物質が水にとけるようす</option>
           <option value="u4">単元4：溶解度と再結晶</option>
+          <option value="sol-matome">第3章おわり：まとめ</option>
+          <option value="sta-yoso">第4章はじめ：予想</option>
           <option value="u5">単元5：物質の状態変化</option>
           <option value="u6">単元6：状態変化と体積・質量の変化</option>
           <option value="u7">単元7：状態変化が起こるときの温度とその利用</option>
+          <option value="sta-matome">第4章おわり：まとめ</option>
         </select>
       </div>
       <div>
@@ -291,11 +313,11 @@
 <div class="chapter-bar">
   <button class="chapter-btn active-gas" id="ch-gas" onclick="switchChapter('gas')">
     <span class="ch-icon">💨</span>
-    <span class="ch-text">第3章　気体の性質<span class="ch-sub">身のまわりの気体・集め方</span></span>
+    <span class="ch-text">第2章　気体の性質<span class="ch-sub">身のまわりの気体・集め方</span></span>
   </button>
   <button class="chapter-btn" id="ch-sol" onclick="switchChapter('sol')">
     <span class="ch-icon">💧</span>
-    <span class="ch-text">第2章　水溶液の性質<span class="ch-sub">とけるようす・溶解度・再結晶</span></span>
+    <span class="ch-text">第3章　水溶液の性質<span class="ch-sub">とけるようす・溶解度・再結晶</span></span>
   </button>
   <button class="chapter-btn" id="ch-sta" onclick="switchChapter('sta')">
     <span class="ch-icon">🔥</span>
@@ -307,7 +329,11 @@
 <div class="chapter-panel active panel-gas" id="panel-gas">
   <!-- LEVEL 2: 単元カード -->
   <div class="unit-bar">
-    <button class="unit-card active-gas" id="utab-u1" onclick="switchUnit('gas','u1')">
+    <button class="unit-card unit-card-edge active-gas" id="utab-gas-yoso" onclick="switchUnit('gas','gas-yoso')">
+      <div class="uc-num">📝 章のはじめ</div>
+      <div class="uc-title">予想を書こう</div>
+    </button>
+    <button class="unit-card" id="utab-u1" onclick="switchUnit('gas','u1')">
       <div class="uc-num">単元 1</div>
       <div class="uc-title">身のまわりの気体の性質</div>
     </button>
@@ -315,23 +341,43 @@
       <div class="uc-num">単元 2</div>
       <div class="uc-title">気体の性質と集め方</div>
     </button>
+    <button class="unit-card unit-card-edge" id="utab-gas-matome" onclick="switchUnit('gas','gas-matome')">
+      <div class="uc-num">📝 章のおわり</div>
+      <div class="uc-title">まとめを書こう</div>
+    </button>
   </div>
 
   <!-- 章の課題 -->
-  <div style="background:#ddeaf8; border-left:6px solid #2563a8; border-radius:0 12px 12px 0; padding:18px 28px; margin:18px 226px 0;">
-    <div style="font-size:12px; font-weight:700; color:#2563a8; letter-spacing:0.08em; margin-bottom:6px;">🔬 この章の課題</div>
-    <div style="font-size:18px; font-weight:700; color:#0c2d56; line-height:1.6;">炭酸飲料のフタを開けると、なぜ泡が出るのか？<br><span style="font-size:14px; font-weight:400; color:#2563a8;">泡の正体と、気体の性質を結びつけて考えよう。</span></div>
+  <div style="background:#ddeaf8; border-left:4px solid #2563a8; border-radius:0 8px 8px 0; margin:12px 226px 0; padding:10px 16px;">
+    <div style="font-size:12px; font-weight:700; color:#2563a8; letter-spacing:0.05em; margin-bottom:4px;">🔬 この章の課題</div>
+    <div style="font-size:15px; font-weight:700; color:#0c2d56; line-height:1.5;">炭酸飲料のフタを開けると、なぜ泡が出るのか？</div>
+    <div style="font-size:12px; font-weight:400; color:#2563a8; margin-top:2px;">泡の正体と、気体の性質を結びつけて考えよう。</div>
   </div>
 
   <div class="notebook-area">
 
+    <!-- 章のはじめ：予想 -->
+    <div class="notebook active" id="nb-gas-yoso">
+      <div class="nb-inner">
+        <div class="card" style="border:2px solid #2563a8; background:#eaf1fa;">
+          <div class="card-head"><span class="badge b-blue">第2章の課題</span></div>
+          <div class="highlight hl-gas task-highlight">炭酸飲料のフタを開けると、なぜ泡が出るのか？</div>
+          <div style="font-size:13px; color:#2563a8; margin-top:-6px; margin-bottom:14px;">泡の正体と、気体の性質を結びつけて考えよう。</div>
+          <div class="field-label">予想</div>
+          <div class="field-q">この章をくわしく学ぶ前に、今の自分の知識や経験から考えてみよう。あとで（章のおわりに）この予想を見直して、どう変わったか比べます。</div>
+          <textarea id="gas-yoso-text" placeholder="自分の考えを書いてみよう"></textarea>
+        </div>
+        <button class="save-btn save-btn-gas" onclick="saveData('gas-yoso')">💾 このノートを保存する</button>
+      </div>
+    </div>
+
     <!-- 単元1 -->
-    <div class="notebook active" id="nb-u1">
+    <div class="notebook" id="nb-u1">
       <div class="nb-inner">
 
         <div class="card">
           <div class="card-head"><span class="badge b-purple">課題</span></div>
-          <div class="highlight hl-gas">身のまわりの気体にはどのような性質があるだろうか。</div>
+          <div class="highlight hl-gas task-highlight">身のまわりの気体にはどのような性質があるだろうか。</div>
           <div class="field-label">予想</div>
           <textarea id="u1-yoso" placeholder="知っている気体の性質を書こう..."></textarea>
         </div>
@@ -426,11 +472,13 @@
             <button onclick="resetSeiri()" style="padding:6px 14px; font-size:13px; border:1px solid #bdd4ef; border-radius:6px; background:#eaf1fa; color:#0c4479; cursor:pointer; font-family:inherit;">↩ リセット</button>
             <button onclick="checkSeiri()" style="padding:6px 14px; font-size:13px; border:1px solid #0f6e56; border-radius:6px; background:#e4f5ee; color:#0f6e56; cursor:pointer; font-family:inherit; font-weight:600;">✅ 答え合わせ</button>
           </div>
+          <input type="hidden" id="seiri-u1-data" value="">
         </div>
 
         <div class="card">
           <div class="card-head"><span class="badge b-purple">まとめ</span><span style="font-size:12px;color:var(--text-muted);">キーワード：気体・性質</span></div>
-          <textarea id="u1-matome" placeholder="92ページの疑問への自分の考えをまとめよう。"></textarea>
+          <div style="font-size:13px; color:#2563a8; font-weight:700; margin-bottom:6px;">📝 身のまわりの気体にはどのような性質があるだろうか、自分の考えをまとめよう。</div>
+          <textarea id="u1-matome" placeholder="自分の考えを書いてみよう"></textarea>
         </div>
                 <div class="card" style="border:2px solid #0f6e56; background:#f0faf6;">
           <div class="card-head"><span class="badge b-teal">📝 振り返り</span></div>
@@ -452,7 +500,7 @@
 
         <div class="card">
           <div class="card-head"><span class="badge b-purple">課題</span></div>
-          <div class="highlight hl-gas">気体の性質によって、気体の集め方はどのように変えたらよいだろうか。</div>
+          <div class="highlight hl-gas task-highlight">気体の性質によって、気体の集め方はどのように変えたらよいだろうか。</div>
           <div class="field-label">予想</div>
           <textarea id="u2-yoso" placeholder="水上置換以外にどんな方法があるか予想してみよう..."></textarea>
         </div>
@@ -519,6 +567,7 @@
             <button onclick="resetSeiriU2()" style="padding:6px 14px; font-size:13px; border:1px solid #bdd4ef; border-radius:6px; background:#eaf1fa; color:#0c4479; cursor:pointer; font-family:inherit;">↩ リセット</button>
             <button onclick="checkSeiriU2()" style="padding:6px 14px; font-size:13px; border:1px solid #0f6e56; border-radius:6px; background:#e4f5ee; color:#0f6e56; cursor:pointer; font-family:inherit; font-weight:600;">✅ 答え合わせ</button>
           </div>
+          <input type="hidden" id="seiri-u2-data" value="">
         </div>
 
         <div class="card">
@@ -531,7 +580,8 @@
 
         <div class="card">
           <div class="card-head"><span class="badge b-purple">まとめ</span><span style="font-size:12px;color:var(--text-muted);">キーワード：気体・集め方・水へのとけやすさ・密度</span></div>
-          <textarea id="u2-matome" placeholder="96ページの疑問への自分の考えをまとめよう。"></textarea>
+          <div style="font-size:13px; color:#2563a8; font-weight:700; margin-bottom:6px;">📝 気体の性質によって、気体の集め方はどのように変えたらよいだろうか、自分の考えをまとめよう。</div>
+          <textarea id="u2-matome" placeholder="自分の考えを書いてみよう"></textarea>
         </div>
                 <div class="card" style="border:2px solid #0f6e56; background:#f0faf6;">
           <div class="card-head"><span class="badge b-teal">📝 振り返り</span></div>
@@ -547,12 +597,31 @@
       </div>
     </div>
 
+    <!-- 章のおわり：まとめ -->
+    <div class="notebook" id="nb-gas-matome">
+      <div class="nb-inner">
+        <div class="card" style="border:2px solid #2563a8; background:#eaf1fa;">
+          <div class="card-head"><span class="badge b-blue">第2章の課題</span></div>
+          <div class="highlight hl-gas task-highlight">炭酸飲料のフタを開けると、なぜ泡が出るのか？</div>
+          <div style="font-size:13px; color:#2563a8; margin-top:-6px; margin-bottom:14px;">泡の正体と、気体の性質を結びつけて考えよう。</div>
+          <div class="field-label">学習後のまとめ</div>
+          <div class="field-q">単元1・単元2で学んだこと（気体の性質・集め方など）をふまえて、この章の課題にあらためて答えよう。章のはじめに書いた予想と、何が変わったかも書いてみよう。</div>
+          <textarea id="gas-matome-text" placeholder="自分の考えを書いてみよう"></textarea>
+        </div>
+        <button class="save-btn save-btn-gas" onclick="saveData('gas-matome')">💾 このノートを保存する</button>
+      </div>
+    </div>
+
   </div><!-- /notebook-area gas -->
 </div><!-- /panel-gas -->
 
 <!-- ===================== 水溶液の章 ===================== -->
 <div class="chapter-panel panel-sol" id="panel-sol">
   <div class="unit-bar">
+    <button class="unit-card unit-card-edge" id="utab-sol-yoso" onclick="switchUnit('sol','sol-yoso')">
+      <div class="uc-num">📝 章のはじめ</div>
+      <div class="uc-title">予想を書こう</div>
+    </button>
     <button class="unit-card" id="utab-u3" onclick="switchUnit('sol','u3')">
       <div class="uc-num">単元 1</div>
       <div class="uc-title">物質が水にとけるようす</div>
@@ -561,15 +630,35 @@
       <div class="uc-num">単元 2</div>
       <div class="uc-title">溶解度と再結晶</div>
     </button>
+    <button class="unit-card unit-card-edge" id="utab-sol-matome" onclick="switchUnit('sol','sol-matome')">
+      <div class="uc-num">📝 章のおわり</div>
+      <div class="uc-title">まとめを書こう</div>
+    </button>
   </div>
 
   <!-- 章の課題 -->
-  <div style="background:#d5f0e6; border-left:6px solid #0f6e56; border-radius:0 12px 12px 0; padding:18px 28px; margin:18px 226px 0;">
-    <div style="font-size:12px; font-weight:700; color:#0f6e56; letter-spacing:0.08em; margin-bottom:6px;">💧 この章の課題</div>
-    <div style="font-size:18px; font-weight:700; color:#0a2e20; line-height:1.6;">海水から塩をとり出すには、どんな方法がある？<br><span style="font-size:14px; font-weight:400; color:#0f6e56;">水にとけるしくみと、とり出す方法を考えよう。</span></div>
+  <div style="background:#d5f0e6; border-left:4px solid #0f6e56; border-radius:0 8px 8px 0; margin:12px 226px 0; padding:10px 16px;">
+    <div style="font-size:12px; font-weight:700; color:#0f6e56; letter-spacing:0.05em; margin-bottom:4px;">💧 この章の課題</div>
+    <div style="font-size:15px; font-weight:700; color:#0a2e20; line-height:1.5;">海水から塩をとり出すには、どんな方法がある？</div>
+    <div style="font-size:12px; font-weight:400; color:#0f6e56; margin-top:2px;">水にとけるしくみと、とり出す方法を考えよう。</div>
   </div>
 
   <div class="notebook-area">
+
+    <!-- 章のはじめ：予想 -->
+    <div class="notebook" id="nb-sol-yoso">
+      <div class="nb-inner">
+        <div class="card" style="border:2px solid #0f6e56; background:#f0faf6;">
+          <div class="card-head"><span class="badge b-teal">第3章の課題</span></div>
+          <div class="highlight hl-sol task-highlight">海水から塩をとり出すには、どんな方法がある？</div>
+          <div style="font-size:13px; color:#0f6e56; margin-top:-6px; margin-bottom:14px;">水にとけるしくみと、とり出す方法を考えよう。</div>
+          <div class="field-label">予想</div>
+          <div class="field-q">この章をくわしく学ぶ前に、今の自分の知識や経験から考えてみよう。あとで（章のおわりに）この予想を見直して、どう変わったか比べます。</div>
+          <textarea id="sol-yoso-text" placeholder="自分の考えを書いてみよう"></textarea>
+        </div>
+        <button class="save-btn save-btn-sol" onclick="saveData('sol-yoso')">💾 このノートを保存する</button>
+      </div>
+    </div>
 
     <!-- 単元3 -->
     <div class="notebook" id="nb-u3">
@@ -578,14 +667,33 @@
         <!-- 課題 -->
         <div class="card">
           <div class="card-head"><span class="badge b-purple">課題</span></div>
-          <div class="highlight hl-sol">物質が水にとけるとは、どのようになることだろうか。</div>
+          <div class="highlight hl-sol task-highlight">物質が水にとけるとは、どのようになることだろうか。</div>
           <div class="field-label">予想（① ～ ④ それぞれについて話し合おう）</div>
-          <div style="font-size:14px; color:var(--text-sub); margin-bottom:8px; line-height:1.8;">
-            ① コーヒーシュガー（砂糖）とデンプンを水に入れたときのようす<br>
-            ② 水に入れる前後の質量　③ ろ過した後のようす<br>
-            ④ 透明になった物をしばらく置いたときのようす
-          </div>
-          <textarea id="u3-yoso" placeholder="自分の予想を書いてみよう..."></textarea>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th style="width:44%;">観察項目</th><th>予想</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="lbl">① コーヒーシュガーを<br>水に入れたときのようす</td>
+                <td><textarea id="u3-yoso-1a" placeholder="どうなると思う？（透明になる・にごる…）"></textarea></td>
+              </tr>
+              <tr>
+                <td class="lbl">① デンプンを<br>水に入れたときのようす</td>
+                <td><textarea id="u3-yoso-1b" placeholder="どうなると思う？（透明になる・にごる…）"></textarea></td>
+              </tr>
+              <tr>
+                <td class="lbl">② 水に入れる前後の質量</td>
+                <td><textarea id="u3-yoso-2" placeholder="重さは変わる？変わらない？"></textarea></td>
+              </tr>
+              <tr>
+                <td class="lbl">③ ろ過した後のようす</td>
+                <td><textarea id="u3-yoso-3" placeholder="ろ紙に残るものはある？液はどうなる？"></textarea></td>
+              </tr>
+              <tr>
+                <td class="lbl">④ 透明になった物を<br>しばらく置いたときのようす</td>
+                <td><textarea id="u3-yoso-4" placeholder="時間がたつとどうなる？"></textarea></td>
+              </tr>
+            </tbody>
+          </table></div>
         </div>
 
         <!-- 実験（p.102〜103準拠） -->
@@ -654,6 +762,97 @@
             ❶ コーヒーシュガーとデンプンをそれぞれビーカーに入れ、水の中でガラス棒でよくかき混ぜて、そのようすを観察する。<br>
             ❷ 水に入れる前と後で全体の質量を電子てんびんではかり、変化があるか確かめる。<br>
             ❸ それぞれの液をろ過し、ろ紙に残るものがあるか・ろ過した液の色を調べる。また、ろ過した液を蒸発させ残ったものがあるか調べる。<br>
+          </div>
+
+          <!-- ろ過の方法 -->
+          <div style="background:#fff8f0; border:1.5px solid #c07840; border-radius:10px; padding:16px 20px; margin:10px 0;">
+            <div style="font-size:15px; font-weight:700; color:#7a4b0a; margin-bottom:14px;">📌 基礎操作：ろ過のしかた</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+              <!-- ① ろ紙の折り方 -->
+              <div>
+                <div style="font-size:14px; font-weight:700; color:#7a4b0a; margin-bottom:8px; background:#f0dfc0; padding:5px 12px; border-radius:4px; display:inline-block;">① ろ紙の折り方</div>
+                <svg viewBox="0 0 260 130" width="100%" style="display:block;">
+                  <!-- Step1: 円形ろ紙 -->
+                  <circle cx="28" cy="58" r="24" fill="#fdf6e3" stroke="#c07840" stroke-width="1.5"/>
+                  <line x1="28" y1="34" x2="28" y2="82" stroke="#c07840" stroke-width="1" stroke-dasharray="3,2"/>
+                  <text x="28" y="96" font-size="8" text-anchor="middle" fill="#7a4b0a">円形ろ紙</text>
+                  <!-- 矢印1 -->
+                  <text x="60" y="62" font-size="13" fill="#aaa">→</text>
+                  <!-- Step2: 半分 -->
+                  <path d="M78 34 A24 24 0 0 1 78 82 Z" fill="#f0dfc0" stroke="#c07840" stroke-width="1.5"/>
+                  <path d="M78 34 L78 82" stroke="#c07840" stroke-width="1.5"/>
+                  <text x="82" y="96" font-size="8" text-anchor="middle" fill="#7a4b0a">半分に折る</text>
+                  <!-- 矢印2 -->
+                  <text x="110" y="62" fill="#aaa" font-size="13">→</text>
+                  <!-- Step3: もう半分 -->
+                  <path d="M124 34 A24 24 0 0 1 124 82 Z" fill="#f0dfc0" stroke="#c07840" stroke-width="1.5"/>
+                  <path d="M124 34 A24 24 0 0 0 124 82 Z" fill="#fdf6e3" stroke="#c07840" stroke-width="1.5"/>
+                  <text x="130" y="96" font-size="8" text-anchor="middle" fill="#7a4b0a">もう一度折る</text>
+                  <!-- 矢印3 -->
+                  <text x="162" y="62" fill="#aaa" font-size="13">→</text>
+                  <!-- Step4: 円すい形に開く -->
+                  <path d="M178 30 L202 88 L226 30 Z" fill="#fdf6e3" stroke="#c07840" stroke-width="1.5"/>
+                  <path d="M178 30 L202 88 L190 30 Z" fill="#f0dfc0" stroke="#c07840" stroke-width="1"/>
+                  <line x1="202" y1="88" x2="202" y2="110" stroke="#c07840" stroke-width="2"/>
+                  <text x="202" y="124" font-size="8" text-anchor="middle" fill="#7a4b0a">開いてろうとへ</text>
+                </svg>
+                <div style="font-size:14px; color:#3a3833; line-height:1.9; margin-top:6px; background:#fffbf3; border-radius:6px; padding:10px 12px;">
+                  ❶ 半分に折る<br>
+                  ❷ もう一度半分に折る<br>
+                  ❸ 1枚だけ開いて円すい形にする<br>
+                  ❹ 水でぬらしてろうとに密着させる
+                </div>
+              </div>
+
+              <!-- ② ろ過の方法 -->
+              <div>
+                <div style="font-size:14px; font-weight:700; color:#7a4b0a; margin-bottom:8px; background:#f0dfc0; padding:5px 12px; border-radius:4px; display:inline-block;">② ろ過の方法と注意点</div>
+                <svg viewBox="0 0 220 200" width="100%" style="display:block;">
+                  <!-- ろうと台（スタンド） -->
+                  <rect x="100" y="5" width="6" height="110" fill="#bbb" rx="2"/>
+                  <rect x="80" y="5" width="46" height="6" rx="3" fill="#bbb"/>
+                  <!-- ろうと -->
+                  <path d="M55 18 L103 85 L151 18 Z" fill="#fdf6e3" stroke="#c07840" stroke-width="2"/>
+                  <path d="M63 21 L103 80 L143 21 Z" fill="#fff" stroke="#e8d0a0" stroke-width="1"/>
+                  <!-- ろうとの管 -->
+                  <rect x="98" y="85" width="10" height="35" rx="2" fill="#fdf6e3" stroke="#c07840" stroke-width="1.5"/>
+                  <!-- ガラス棒 -->
+                  <line x1="130" y1="5" x2="115" y2="95" stroke="#90b0c0" stroke-width="4" stroke-linecap="round"/>
+                  <circle cx="130" cy="5" r="4" fill="#90b0c0"/>
+                  <!-- ビーカー -->
+                  <rect x="58" y="124" width="90" height="68" rx="4" fill="#ddeeff" stroke="#5a8fc0" stroke-width="2"/>
+                  <rect x="55" y="120" width="96" height="10" rx="3" fill="none" stroke="#5a8fc0" stroke-width="2"/>
+                  <!-- ろ液 -->
+                  <rect x="59" y="158" width="88" height="33" rx="3" fill="#b8dcf8" opacity="0.5"/>
+                  <!-- ろうとの先→ビーカーかべ -->
+                  <line x1="103" y1="120" x2="103" y2="124" stroke="#5a8fc0" stroke-width="1.5" stroke-dasharray="2,2"/>
+                  <!-- 注意ポイント（吹き出し風） -->
+                  <!-- ガラス棒の注意 -->
+                  <rect x="148" y="28" width="68" height="28" rx="5" fill="#ffeaea" stroke="#e03030" stroke-width="1"/>
+                  <polygon points="148,38 140,42 148,46" fill="#ffeaea" stroke="#e03030" stroke-width="1"/>
+                  <text x="182" y="40" font-size="8" text-anchor="middle" fill="#c03030" font-weight="700">ガラス棒を</text>
+                  <text x="182" y="52" font-size="8" text-anchor="middle" fill="#c03030">ろ紙に当てる</text>
+                  <!-- ろうとの先の注意 -->
+                  <rect x="148" y="96" width="68" height="28" rx="5" fill="#fff3e0" stroke="#c07840" stroke-width="1"/>
+                  <polygon points="148,106 108,110 148,114" fill="#fff3e0" stroke="#c07840" stroke-width="1"/>
+                  <text x="182" y="108" font-size="8" text-anchor="middle" fill="#7a4b0a" font-weight="700">ろうとの先を</text>
+                  <text x="182" y="120" font-size="8" text-anchor="middle" fill="#7a4b0a">かべにつける</text>
+                  <!-- 8分目ライン -->
+                  <line x1="59" y1="148" x2="147" y2="148" stroke="#e03030" stroke-width="1" stroke-dasharray="3,2"/>
+                  <text x="50" y="151" font-size="7" fill="#e03030" text-anchor="end">8分目</text>
+                </svg>
+                <div style="font-size:14px; color:#3a3833; line-height:1.9; margin-top:6px; background:#fffbf3; border-radius:6px; padding:10px 12px;">
+                  ● 液は<strong>ガラス棒を伝わらせて</strong>ゆっくり入れる<br>
+                  ● ろうとのあしのとがった方を<strong>ビーカーのかべにつける</strong><br>
+                  ● ろ紙の<strong>8分目以上</strong>液を入れない
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="proc-box" style="margin-top:10px;">
+            （続き）
             ❹ それぞれの液を一晩置いて、ようすを観察する。
           </div>
 
@@ -692,81 +891,203 @@
           </table></div>
         </div>
 
+        <!-- 考察 -->
+        <div class="card">
+          <div class="card-head"><span class="badge b-coral">考察</span><span class="card-title">実験結果から考えよう（p.103〜104）</span></div>
+          <div class="field-label">① コーヒーシュガーとデンプンの、水に入れたときのようすのちがいから何がわかるか？</div>
+          <textarea placeholder="「とける」と「とけない」の違いをまとめよう..."></textarea>
+          <div class="field-label">② 水に入れる前後の質量が変わらなかったことから何がわかるか？</div>
+          <textarea placeholder="物質はどこへいったのか、粒子の考えを使って説明しよう..."></textarea>
+          <div class="field-label">③ ろ過の結果と一晩置いた後のようすから、水溶液の特徴を説明しよう。</div>
+          <textarea placeholder="均一・透明・時間がたっても変化しない…という観点で考えよう..."></textarea>
+          <div class="field-label">④ 班・クラス全体での話し合いで気づいたこと・考えが変わったことを書こう。</div>
+          <textarea placeholder="他の班の意見で気づいたことなど..."></textarea>
+        </div>
+
         <!-- 水溶液の用語・粒子モデル（p.104〜105準拠） -->
         <div class="card">
           <div class="card-head"><span class="badge b-blue">ポイント整理</span><span class="card-title">物質が水にとけるとは</span></div>
           <div class="highlight hl-sol">物質が水にとけると、次の状態になる。<br>
-            ① 液が <span style="background:#fff3cd; padding:0 6px; border-radius:4px;">　　　　</span> になる。<br>
-            ② 液のこさは、どの部分も <span style="background:#fff3cd; padding:0 6px; border-radius:4px;">　　　　</span>。<br>
-            ③ 液のこさは、時間がたっても <span style="background:#fff3cd; padding:0 6px; border-radius:4px;">　　　　</span>。
+            ① 液が
+            <select class="quiz-select" data-answer="透明" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="透明">透明</option>
+              <option value="白くにごる">白くにごる</option>
+              <option value="2層に分かれる">2層に分かれる</option>
+            </select>
+            になる。<span class="quiz-result"></span><br>
+            ② 液のこさは、どの部分も
+            <select class="quiz-select" data-answer="同じ" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="同じ">同じ</option>
+              <option value="上の方がこい">上の方がこい</option>
+              <option value="下の方がこい">下の方がこい</option>
+            </select>
+            。<span class="quiz-result"></span><br>
+            ③ 液のこさは、時間がたっても
+            <select class="quiz-select" data-answer="変わらない" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="変わらない">変わらない</option>
+              <option value="だんだんこくなる">だんだんこくなる</option>
+              <option value="だんだんうすくなる">だんだんうすくなる</option>
+            </select>
+            。<span class="quiz-result"></span>
           </div>
           <div style="margin: 10px 0 14px;">
-            <div style="font-size:13px; font-weight:700; color:#0f6e56; margin-bottom:10px;">🔵 粒子のモデルで説明しよう</div>
-            <svg viewBox="0 0 500 130" width="100%" style="background:#f9f8f5; border-radius:8px; border:1px solid #e2e0d8;">
-              <!-- ビーカー1 -->
-              <rect x="30" y="15" width="60" height="90" rx="4" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5"/>
-              <rect x="28" y="12" width="64" height="8" rx="2" fill="none" stroke="#5a8fc0" stroke-width="1.5"/>
-              <rect x="31" y="60" width="58" height="44" fill="#a8d8f0" opacity="0.4"/>
-              <!-- 砂糖粒(大) -->
-              <circle cx="60" cy="45" r="9" fill="#f0b840" stroke="#c07820" stroke-width="1"/>
-              <circle cx="58" cy="43" r="2" fill="#fff" opacity="0.5"/>
-              <text x="60" y="117" font-size="9" text-anchor="middle" fill="#333">砂糖の粒子</text>
-              <text x="60" y="128" font-size="9" text-anchor="middle" fill="#333">水に入れる</text>
+            <div style="font-size:13px; font-weight:700; color:#0f6e56; margin-bottom:6px;">🔵 粒子のモデルで説明しよう</div>
+            <div style="font-size:13px; color:#5a5852; margin-bottom:10px;">それぞれのビーカーの中をクリックして、砂糖の粒子（●）を置いてみよう。時間が経つにつれて粒子がどう変化するか考えながら配置しよう。</div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; background:#f9f8f5; border-radius:8px; border:1px solid #e2e0d8; padding:14px;">
 
-              <!-- 矢印1 -->
-              <text x="105" y="68" font-size="18" text-anchor="middle" fill="#5a8fc0">→</text>
+              <!-- ビーカー① 入れた直後 -->
+              <div style="text-align:center;">
+                <div style="font-size:12px; font-weight:700; color:#333; margin-bottom:6px;">① 水に入れた直後</div>
+                <svg class="particle-beaker" data-beaker="p1" viewBox="0 0 140 150" width="100%" style="background:#fff; border-radius:6px; cursor:crosshair;" onclick="addParticle(event,'p1')">
+                  <rect x="15" y="10" width="110" height="120" rx="4" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <rect x="13" y="7" width="114" height="8" rx="2" fill="none" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <rect x="17" y="65" width="106" height="64" fill="#a8d8f0" opacity="0.35" pointer-events="none"/>
+                  <g id="particles-p1"></g>
+                </svg>
+                <div style="display:flex; gap:6px; justify-content:center; margin-top:6px;">
+                  <button onclick="undoParticle('p1')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+                  <button onclick="clearParticles('p1')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
+                </div>
+              </div>
 
-              <!-- ビーカー2 -->
-              <rect x="125" y="15" width="60" height="90" rx="4" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5"/>
-              <rect x="123" y="12" width="64" height="8" rx="2" fill="none" stroke="#5a8fc0" stroke-width="1.5"/>
-              <rect x="126" y="50" width="58" height="54" fill="#a8d8f0" opacity="0.4"/>
-              <!-- 粒が分散しはじめ -->
-              <circle cx="145" cy="45" r="5" fill="#f0b840" opacity="0.8"/>
-              <circle cx="160" cy="55" r="5" fill="#f0b840" opacity="0.8"/>
-              <circle cx="152" cy="70" r="5" fill="#f0b840" opacity="0.7"/>
-              <circle cx="168" cy="40" r="5" fill="#f0b840" opacity="0.7"/>
-              <text x="155" y="117" font-size="9" text-anchor="middle" fill="#333">水の中で</text>
-              <text x="155" y="128" font-size="9" text-anchor="middle" fill="#333">広がっていく</text>
+              <!-- ビーカー② 広がっていく途中 -->
+              <div style="text-align:center;">
+                <div style="font-size:12px; font-weight:700; color:#333; margin-bottom:6px;">② 広がっていく途中</div>
+                <svg class="particle-beaker" data-beaker="p2" viewBox="0 0 140 150" width="100%" style="background:#fff; border-radius:6px; cursor:crosshair;" onclick="addParticle(event,'p2')">
+                  <rect x="15" y="10" width="110" height="120" rx="4" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <rect x="13" y="7" width="114" height="8" rx="2" fill="none" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <rect x="17" y="40" width="106" height="89" fill="#a8d8f0" opacity="0.35" pointer-events="none"/>
+                  <g id="particles-p2"></g>
+                </svg>
+                <div style="display:flex; gap:6px; justify-content:center; margin-top:6px;">
+                  <button onclick="undoParticle('p2')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+                  <button onclick="clearParticles('p2')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
+                </div>
+              </div>
 
-              <!-- 矢印2 -->
-              <text x="200" y="68" font-size="18" text-anchor="middle" fill="#5a8fc0">→</text>
+              <!-- ビーカー③ 均一になった状態 -->
+              <div style="text-align:center;">
+                <div style="font-size:12px; font-weight:700; color:#333; margin-bottom:6px;">③ 均一になった状態</div>
+                <svg class="particle-beaker" data-beaker="p3" viewBox="0 0 140 150" width="100%" style="background:#fff; border-radius:6px; cursor:crosshair;" onclick="addParticle(event,'p3')">
+                  <rect x="15" y="10" width="110" height="120" rx="4" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <rect x="13" y="7" width="114" height="8" rx="2" fill="none" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <rect x="17" y="15" width="106" height="114" fill="#a8d8f0" opacity="0.35" pointer-events="none"/>
+                  <g id="particles-p3"></g>
+                </svg>
+                <div style="display:flex; gap:6px; justify-content:center; margin-top:6px;">
+                  <button onclick="undoParticle('p3')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+                  <button onclick="clearParticles('p3')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
+                </div>
+              </div>
 
-              <!-- ビーカー3 -->
-              <rect x="218" y="15" width="60" height="90" rx="4" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5"/>
-              <rect x="216" y="12" width="64" height="8" rx="2" fill="none" stroke="#5a8fc0" stroke-width="1.5"/>
-              <rect x="219" y="20" width="58" height="84" fill="#a8d8f0" opacity="0.4"/>
-              <!-- 均一に分散 -->
-              <circle cx="232" cy="35" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="248" cy="28" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="263" cy="40" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="240" cy="55" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="258" cy="60" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="232" cy="75" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="255" cy="80" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="270" cy="70" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="242" cy="90" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <circle cx="265" cy="95" r="3.5" fill="#f0b840" opacity="0.9"/>
-              <text x="248" y="117" font-size="9" text-anchor="middle" fill="#333">均一に</text>
-              <text x="248" y="128" font-size="9" text-anchor="middle" fill="#333">広がった状態</text>
-
-              <!-- 用語ラベル -->
-              <rect x="340" y="20" width="145" height="95" rx="6" fill="#e4f5ee" stroke="#0f6e56" stroke-width="1"/>
-              <text x="413" y="38" font-size="10" font-weight="700" text-anchor="middle" fill="#0f6e56">用語の確認</text>
-              <text x="352" y="55" font-size="9" fill="#333">・とけている物質 → <tspan font-weight="700" fill="#0f6e56">溶質</tspan></text>
-              <text x="352" y="70" font-size="9" fill="#333">・とかしている液体 → <tspan font-weight="700" fill="#0f6e56">溶媒</tspan></text>
-              <text x="352" y="85" font-size="9" fill="#333">・溶媒が水 → <tspan font-weight="700" fill="#0f6e56">水溶液</tspan></text>
-              <text x="352" y="100" font-size="9" fill="#333">・全体 → <tspan font-weight="700" fill="#0f6e56">溶液</tspan></text>
-            </svg>
+            </div>
+            <input type="hidden" id="particles-p1-data" value="">
+            <input type="hidden" id="particles-p2-data" value="">
+            <input type="hidden" id="particles-p3-data" value="">
+            <div class="field-label" style="margin-top:10px;">なぜそのように粒子を配置したのか、理由を説明しよう</div>
+            <textarea class="sm" placeholder="①→②→③でどんな順番に粒子を置いた？粒子の数は変わった？広がり方はどう変わった？なぜそう考えたのか説明しよう..."></textarea>
           </div>
-          <div class="field-label">用語を使って下の文を完成させよう</div>
+          <div class="field-label">下の語句から正しいものを選んで、文を完成させよう</div>
           <div class="tbl-wrap"><table>
-            <thead><tr><th>用語</th><th>意味・説明</th></tr></thead>
+            <thead><tr><th>説明</th><th>あてはまる用語</th></tr></thead>
             <tbody>
-              <tr><td class="lbl">溶質</td><td><textarea class="sm" placeholder="液体にとけている物質のこと。例：砂糖水の（　　　）"></textarea></td></tr>
-              <tr><td class="lbl">溶媒</td><td><textarea class="sm" placeholder="物質をとかしている液体のこと。例：砂糖水の（　　　）"></textarea></td></tr>
-              <tr><td class="lbl">水溶液</td><td><textarea class="sm" placeholder="溶媒が水である溶液のこと。特徴3つ：（　）（　）（　）"></textarea></td></tr>
+              <tr>
+                <td class="lbl">液体にとけている物質のこと<br><span style="font-size:12px;font-weight:400;">（例：砂糖水の砂糖）</span></td>
+                <td>
+                  <select class="quiz-select" data-answer="溶質" onchange="checkQuiz(this)">
+                    <option value="">選んでね</option>
+                    <option value="溶質">溶質</option>
+                    <option value="溶媒">溶媒</option>
+                    <option value="溶液">溶液</option>
+                    <option value="水溶液">水溶液</option>
+                  </select>
+                  <span class="quiz-result"></span>
+                </td>
+              </tr>
+              <tr>
+                <td class="lbl">物質をとかしている液体のこと<br><span style="font-size:12px;font-weight:400;">（例：砂糖水の水）</span></td>
+                <td>
+                  <select class="quiz-select" data-answer="溶媒" onchange="checkQuiz(this)">
+                    <option value="">選んでね</option>
+                    <option value="溶質">溶質</option>
+                    <option value="溶媒">溶媒</option>
+                    <option value="溶液">溶液</option>
+                    <option value="水溶液">水溶液</option>
+                  </select>
+                  <span class="quiz-result"></span>
+                </td>
+              </tr>
+              <tr>
+                <td class="lbl">溶質が溶媒にとけた液全体のこと</td>
+                <td>
+                  <select class="quiz-select" data-answer="溶液" onchange="checkQuiz(this)">
+                    <option value="">選んでね</option>
+                    <option value="溶質">溶質</option>
+                    <option value="溶媒">溶媒</option>
+                    <option value="溶液">溶液</option>
+                    <option value="水溶液">水溶液</option>
+                  </select>
+                  <span class="quiz-result"></span>
+                </td>
+              </tr>
+              <tr>
+                <td class="lbl">溶媒が水である溶液のこと</td>
+                <td>
+                  <select class="quiz-select" data-answer="水溶液" onchange="checkQuiz(this)">
+                    <option value="">選んでね</option>
+                    <option value="溶質">溶質</option>
+                    <option value="溶媒">溶媒</option>
+                    <option value="溶液">溶液</option>
+                    <option value="水溶液">水溶液</option>
+                  </select>
+                  <span class="quiz-result"></span>
+                </td>
+              </tr>
             </tbody>
           </table></div>
+        </div>
+
+        <!-- 濃度の導入（p.106準拠：なぜ濃度が必要か） -->
+        <div class="card" style="border:2px solid #c07840; background:#fffaf0;">
+          <div class="card-head"><span class="badge b-amber">考えてみよう</span><span class="card-title">「濃さ」をどう比べる？</span></div>
+          <div class="highlight hl-amber">
+            水100gに砂糖40gをとかした砂糖水と、水40gに砂糖5gをとかした砂糖水。<br>
+            どちらが甘い（濃い）だろうか？
+          </div>
+          <!-- 2種類の砂糖水のイラスト -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:12px 0;">
+            <div style="text-align:center; background:#fff; border-radius:8px; padding:12px; border:1px solid #e2e0d8;">
+              <svg viewBox="0 0 120 110" width="100%">
+                <rect x="30" y="15" width="60" height="80" rx="4" fill="#fdf0d8" stroke="#c07840" stroke-width="1.5"/>
+                <rect x="28" y="12" width="64" height="8" rx="2" fill="none" stroke="#c07840" stroke-width="1.5"/>
+                <rect x="32" y="35" width="56" height="58" fill="#f5dba0" opacity="0.5"/>
+                <text x="60" y="105" font-size="10" text-anchor="middle" fill="#333" font-weight="700">水100g + 砂糖40g</text>
+              </svg>
+              <div style="font-size:13px; color:#5a5852; margin-top:4px;">砂糖水A</div>
+            </div>
+            <div style="text-align:center; background:#fff; border-radius:8px; padding:12px; border:1px solid #e2e0d8;">
+              <svg viewBox="0 0 120 110" width="100%">
+                <rect x="30" y="40" width="60" height="55" rx="4" fill="#fdf0d8" stroke="#c07840" stroke-width="1.5"/>
+                <rect x="28" y="37" width="64" height="8" rx="2" fill="none" stroke="#c07840" stroke-width="1.5"/>
+                <rect x="32" y="55" width="56" height="38" fill="#f5dba0" opacity="0.5"/>
+                <text x="60" y="105" font-size="10" text-anchor="middle" fill="#333" font-weight="700">水40g + 砂糖5g</text>
+              </svg>
+              <div style="font-size:13px; color:#5a5852; margin-top:4px;">砂糖水B</div>
+            </div>
+          </div>
+          <div class="field-label">予想してみよう</div>
+          <textarea class="sm" placeholder="どちらが濃い（甘い）と思う？理由も書いてみよう（砂糖の量だけで比べていい？水の量も関係する？）"></textarea>
+          <div class="proc-box" style="margin-top:12px;">
+            砂糖の量だけ見るとAの方が多い（40g）。でも、水の量も全然ちがう（A:100g、B:40g）。<br>
+            <strong>砂糖の量だけでは「濃さ」を比べられない</strong>。水の量も考えに入れる必要がある。<br><br>
+            そこで使うのが「<strong>質量パーセント濃度</strong>」という考え方。<br>
+            溶液全体の質量のうち、溶質（とけている物質）が何%をしめているかで表すと、量がちがう水溶液どうしでも公平に「濃さ」を比べられる。
+          </div>
+          <div class="field-label">どんなときに役立つか考えてみよう</div>
+          <textarea class="sm" placeholder="身のまわりで「濃度」が使われている例を考えよう（例：スポーツドリンク・消毒液・ジュース・プールの塩素濃度など）"></textarea>
         </div>
 
         <!-- 質量パーセント濃度（p.106準拠） -->
@@ -787,45 +1108,106 @@
               <div class="field-label">練習① （教科書 p.106）</div>
               <div class="field-q">水68gに食塩12gをとかした食塩水の質量パーセント濃度は何%か。</div>
               <textarea class="sm" placeholder="式：　　÷（　　+　　）× 100 =　　%"></textarea>
+              <button type="button" class="answer-toggle-btn" onclick="toggleAnswer('u3-conc-ans1')">答えを見る</button>
+              <div id="u3-conc-ans1" class="answer-box" style="display:none;">
+                <strong>考え方</strong><br>
+                質量パーセント濃度は「溶質（とけているもの）の質量 ÷ 溶液（水溶液）全体の質量 × 100」で求める。溶液の質量は、食塩と水を合わせた質量になる。<br><br>
+                溶液の質量 = 12g（食塩）+ 68g（水）= 80g<br>
+                濃度 = 12 ÷ 80 × 100 = <strong>15%</strong>
+              </div>
             </div>
             <div>
               <div class="field-label">練習②</div>
               <div class="field-q">18%の食塩水を100gつくるには、食塩と水をそれぞれ何gずつ用意すればよいか。</div>
               <textarea class="sm" placeholder="食塩：　g、水：　g（計算式も書こう）"></textarea>
+              <button type="button" class="answer-toggle-btn" onclick="toggleAnswer('u3-conc-ans2')">答えを見る</button>
+              <div id="u3-conc-ans2" class="answer-box" style="display:none;">
+                <strong>考え方</strong><br>
+                「食塩水全体100g」のうち18%が食塩の質量にあたる、と考える。<br><br>
+                食塩の質量 = 100g × 0.18 = <strong>18g</strong><br>
+                水の質量 = 100g − 18g = <strong>82g</strong>
+              </div>
             </div>
           </div>
           <div style="margin-top:10px;">
             <div class="field-label">純粋な物質と混合物</div>
+            <div class="highlight hl-sol" style="margin-bottom:10px;">
+              水・酸素・二酸化炭素・ブドウ糖のように、<strong>1種類の物質だけ</strong>でできているものと、<br>
+              砂糖水・炭酸飲料のように、<strong>いくつかの物質が混じり合った</strong>もの。この2つを比べてみよう。
+            </div>
+            <div class="field-label">①　次の物質を「純粋な物質」か「混合物」かに分けよう</div>
+            <div class="tbl-wrap"><table>
+              <thead><tr><th>物質</th><th>分類</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="lbl">水</td>
+                  <td>
+                    <select class="quiz-select" data-answer="純粋な物質" onchange="checkQuiz(this)">
+                      <option value="">選んでね</option>
+                      <option value="純粋な物質">純粋な物質</option>
+                      <option value="混合物">混合物</option>
+                    </select>
+                    <span class="quiz-result"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="lbl">酸素</td>
+                  <td>
+                    <select class="quiz-select" data-answer="純粋な物質" onchange="checkQuiz(this)">
+                      <option value="">選んでね</option>
+                      <option value="純粋な物質">純粋な物質</option>
+                      <option value="混合物">混合物</option>
+                    </select>
+                    <span class="quiz-result"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="lbl">砂糖水</td>
+                  <td>
+                    <select class="quiz-select" data-answer="混合物" onchange="checkQuiz(this)">
+                      <option value="">選んでね</option>
+                      <option value="純粋な物質">純粋な物質</option>
+                      <option value="混合物">混合物</option>
+                    </select>
+                    <span class="quiz-result"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="lbl">炭酸飲料</td>
+                  <td>
+                    <select class="quiz-select" data-answer="混合物" onchange="checkQuiz(this)">
+                      <option value="">選んでね</option>
+                      <option value="純粋な物質">純粋な物質</option>
+                      <option value="混合物">混合物</option>
+                    </select>
+                    <span class="quiz-result"></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table></div>
+            <div class="field-label" style="margin-top:12px;">②　どんな物質か、自分の言葉で説明しよう</div>
             <div class="tbl-wrap"><table>
               <thead><tr><th></th><th>純粋な物質（純物質）</th><th>混合物</th></tr></thead>
               <tbody>
                 <tr>
-                  <td class="lbl">定義</td>
-                  <td><textarea class="sm" placeholder="1種類の物質からできている。例：水・酸素・二酸化炭素…"></textarea></td>
-                  <td><textarea class="sm" placeholder="いくつかの物質が混じり合ったもの。例：砂糖水・炭酸飲料…"></textarea></td>
+                  <td class="lbl">どんな物質か</td>
+                  <td><textarea class="sm" placeholder="上で分けた例から、どんな特徴の物質か考えよう"></textarea></td>
+                  <td><textarea class="sm" placeholder="上で分けた例から、どんな特徴の物質か考えよう"></textarea></td>
+                </tr>
+                <tr>
+                  <td class="lbl">他の身近な例</td>
+                  <td><textarea class="sm" placeholder="自分で他の例も考えてみよう"></textarea></td>
+                  <td><textarea class="sm" placeholder="自分で他の例も考えてみよう"></textarea></td>
                 </tr>
               </tbody>
             </table></div>
           </div>
         </div>
 
-        <!-- 考察 -->
-        <div class="card">
-          <div class="card-head"><span class="badge b-coral">考察</span><span class="card-title">実験結果から考えよう（p.103〜104）</span></div>
-          <div class="field-label">① コーヒーシュガーとデンプンの、水に入れたときのようすのちがいから何がわかるか？</div>
-          <textarea placeholder="「とける」と「とけない」の違いをまとめよう..."></textarea>
-          <div class="field-label">② 水に入れる前後の質量が変わらなかったことから何がわかるか？</div>
-          <textarea placeholder="物質はどこへいったのか、粒子の考えを使って説明しよう..."></textarea>
-          <div class="field-label">③ ろ過の結果と一晩置いた後のようすから、水溶液の特徴を説明しよう。</div>
-          <textarea placeholder="均一・透明・時間がたっても変化しない…という観点で考えよう..."></textarea>
-          <div class="field-label">④ 班・クラス全体での話し合いで気づいたこと・考えが変わったことを書こう。</div>
-          <textarea placeholder="他の班の意見で気づいたことなど..."></textarea>
-        </div>
-
         <!-- まとめ -->
         <div class="card">
           <div class="card-head"><span class="badge b-purple">まとめ</span><span style="font-size:12px;color:var(--text-muted);">使うキーワード：透明・均一・変わらない・溶質・溶媒・水溶液</span></div>
-          <div style="font-size:13px; color:#0f6e56; font-weight:700; margin-bottom:6px;">📝 102ページの「？」への自分の考えをまとめよう。（言葉・図・粒子モデルなどを使って）</div>
+          <div style="font-size:13px; color:#0f6e56; font-weight:700; margin-bottom:6px;">📝 物質が水にとけるとは、どのようになることだろうか。自分の考えをまとめよう。（言葉・図・粒子モデルなどを使って）</div>
           <textarea id="u3-matome" placeholder="物質が水にとけるとはどういうことか、粒子のモデルも使いながらまとめよう。&#10;「砂糖がとけていくようすを、言葉や図、モデルなどを使って表そう。」"></textarea>
         </div>
                 <div class="card" style="border:2px solid #0f6e56; background:#f0faf6;">
@@ -849,23 +1231,24 @@
         <!-- 課題 -->
         <div class="card">
           <div class="card-head"><span class="badge b-purple">課題</span></div>
-          <div class="highlight hl-sol">水にとけている物質をとり出すため、水を蒸発させる以外にどのような方法があるだろうか。</div>
-          <div class="field-label">予想（糖液から精製糖をつくる例をもとに考えよう）</div>
-          <textarea id="u4-yoso" placeholder="硝酸カリウムなどの溶質がとけた水溶液から、溶質をとり出す方法を考えよう..."></textarea>
+          <div class="highlight hl-sol task-highlight">水にとけている物質をとり出すため、水を蒸発させる以外にどのような方法があるか考えよう。</div>
+          <div class="field-label">予想</div>
+          <div class="field-q">考え方の例：小学校で食塩やミョウバンを水にとかす実験をしたときのことを思い出してみるのも一つの方法です。</div>
+          <textarea id="u4-yoso" placeholder="自分の考えを書いてみよう"></textarea>
         </div>
 
         <!-- 実験5（p.108〜109準拠） -->
         <div class="card">
           <div class="card-head"><span class="badge b-teal">実験 5</span><span class="card-title">水にとけた物質のとり出し</span></div>
           <div class="info-row">
-            <div class="info-box"><strong>目的</strong>異なる2つの物質に同じ量の水を加え、それぞれを熱したときのとけ方のちがいを観察し、その後、冷やして、とけた物質がとり出せるかどうかを調べる。</div>
-            <div class="info-box"><strong>準備</strong>食塩（塩化ナトリウム）・硝酸カリウム・薬包紙・電子てんびん・試験管×2・試験管立て・薬さじ・メスシリンダー（10cm³用）・ビーカー・ガスバーナー・三脚・金網・スタンド・温度計・ガラス棒・スライドガラス×2・顕微鏡（双眼実体顕微鏡）・ルーペ</div>
+            <div class="info-box" style="font-size:16px;"><strong>目的</strong>異なる2つの物質に同じ量の水を加え、それぞれを熱したときのとけ方のちがいを観察し、その後、冷やして、とけた物質がとり出せるかどうかを調べる。</div>
+            <div class="info-box" style="font-size:16px;"><strong>準備</strong>食塩（塩化ナトリウム）・硝酸カリウム・薬包紙・電子てんびん・試験管×2・試験管立て・薬さじ・メスシリンダー（10cm³用）・ビーカー・ガスバーナー・三脚・金網・スタンド・温度計・ガラス棒・スライドガラス×2・顕微鏡（双眼実体顕微鏡）・ルーペ</div>
           </div>
 
           <!-- 手順イラスト（4ステップ） -->
           <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:10px 0 14px;">
             <div style="background:#f0f8f4; border-radius:8px; padding:8px; text-align:center;">
-              <div style="font-size:11px; font-weight:700; color:#0f6e56; margin-bottom:4px;">ステップ① とかす</div>
+              <div style="font-size:13px; font-weight:700; color:#0f6e56; margin-bottom:4px;">ステップ① とかす</div>
               <svg viewBox="0 0 80 110" width="100%">
                 <rect x="8" y="20" width="22" height="62" rx="5" fill="#e0f0ff" stroke="#5a8fc0" stroke-width="1.5"/>
                 <text x="19" y="15" font-size="9" text-anchor="middle" fill="#2563a8">A</text>
@@ -880,7 +1263,7 @@
               </svg>
             </div>
             <div style="background:#fff8f0; border-radius:8px; padding:8px; text-align:center;">
-              <div style="font-size:11px; font-weight:700; color:#7a4b0a; margin-bottom:4px;">ステップ② 加熱</div>
+              <div style="font-size:13px; font-weight:700; color:#7a4b0a; margin-bottom:4px;">ステップ② 加熱</div>
               <svg viewBox="0 0 80 110" width="100%">
                 <rect x="10" y="35" width="60" height="52" rx="4" fill="#ffe8c0" stroke="#c07820" stroke-width="1.5"/>
                 <rect x="8" y="32" width="64" height="7" rx="3" fill="none" stroke="#c07820" stroke-width="1.5"/>
@@ -896,7 +1279,7 @@
               </svg>
             </div>
             <div style="background:#f0f4fa; border-radius:8px; padding:8px; text-align:center;">
-              <div style="font-size:11px; font-weight:700; color:#2563a8; margin-bottom:4px;">ステップ③ 冷やす</div>
+              <div style="font-size:13px; font-weight:700; color:#2563a8; margin-bottom:4px;">ステップ③ 冷やす</div>
               <svg viewBox="0 0 80 110" width="100%">
                 <rect x="10" y="35" width="60" height="52" rx="4" fill="#c8e8f8" stroke="#5a8fc0" stroke-width="1.5"/>
                 <rect x="8" y="32" width="64" height="7" rx="3" fill="none" stroke="#5a8fc0" stroke-width="1.5"/>
@@ -911,7 +1294,7 @@
               </svg>
             </div>
             <div style="background:#fdf4f8; border-radius:8px; padding:8px; text-align:center;">
-              <div style="font-size:11px; font-weight:700; color:#8b3318; margin-bottom:4px;">ステップ④ 観察</div>
+              <div style="font-size:13px; font-weight:700; color:#8b3318; margin-bottom:4px;">ステップ④ 観察</div>
               <svg viewBox="0 0 80 110" width="100%">
                 <rect x="10" y="57" width="60" height="14" rx="2" fill="#d0e8f8" stroke="#5a8fc0" stroke-width="1.5" opacity="0.7"/>
                 <text x="40" y="69" font-size="7.5" text-anchor="middle" fill="#333">スライドガラス</text>
@@ -926,7 +1309,7 @@
             </div>
           </div>
 
-          <div class="proc-box">
+          <div class="proc-box" style="font-size:17px; line-height:2.1;">
             <strong>ステップ① 物質をとかす</strong><br>
             A の試験管に食塩（塩化ナトリウム）3g、B の試験管に硝酸カリウム3gをそれぞれとり、水5cm³（メスシリンダーで量る）をそれぞれ加え、よく混ぜる。<br><br>
             <strong>ステップ② 熱してとかす</strong><br>
@@ -972,12 +1355,74 @@
           </table></div>
         </div>
 
+        <!-- 考察 -->
+        <div class="card">
+          <div class="card-head"><span class="badge b-coral">考察</span><span class="card-title">なぜ A と B の試験管にちがいが生じたのか（p.110）</span></div>
+          <div class="field-label">① 食塩と硝酸カリウムで実験結果にちがいが出たのはなぜか？（温度を変えたときの、とける量の変わり方に着目して）</div>
+          <textarea placeholder=""></textarea>
+          <div class="field-label">② 水にとけている物質をとり出すには、どんな物質が向いていて、どんな物質は向いていないか？食塩を例に考えよう。</div>
+          <textarea placeholder=""></textarea>
+          <div class="field-label">③ 班・クラスでの話し合いで、気づいたこと・考えが深まったことを書こう。</div>
+          <textarea placeholder=""></textarea>
+        </div>
+
         <!-- 溶解度・溶解度曲線・再結晶（p.110〜112準拠） -->
         <div class="card">
           <div class="card-head"><span class="badge b-blue">ポイント整理</span><span class="card-title">溶解度と溶解度曲線・再結晶</span></div>
           <div class="highlight hl-sol">
             <strong>溶解度</strong>：一定量の溶媒にとける溶質の最大質量（水100gにとける溶質の質量[g]）<br>
-            水が溶解度まで溶質がとけている状態 →&nbsp;<span style="background:#fff3cd; padding:0 6px; border-radius:4px;">　　　　</span>状態、その水溶液 →&nbsp;<span style="background:#fff3cd; padding:0 6px; border-radius:4px;">　　　　</span>水溶液
+            水が溶解度まで溶質がとけている状態 →
+            <select class="quiz-select" data-answer="飽和" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="飽和">飽和</option>
+              <option value="希薄">希薄</option>
+              <option value="蒸発">蒸発</option>
+            </select>
+            <span class="quiz-result"></span>
+            状態、その水溶液 →
+            <select class="quiz-select" data-answer="飽和水溶液" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="飽和水溶液">飽和水溶液</option>
+              <option value="希薄水溶液">希薄水溶液</option>
+              <option value="純粋な水溶液">純粋な水溶液</option>
+            </select>
+            <span class="quiz-result"></span>
+            水溶液
+          </div>
+
+          <!-- 用語の確認クイズ -->
+          <div class="proc-box" style="margin-top:12px;">
+            <div class="field-label" style="margin-top:0;">用語の確認</div>
+            <div class="field-q">
+              ① 「溶解度」とは何か。
+              <select class="quiz-select" data-answer="一定量の溶媒にとける溶質の最大質量" onchange="checkQuiz(this)">
+                <option value="">選んでね</option>
+                <option value="一定量の溶媒にとける溶質の最大質量">一定量の溶媒にとける溶質の最大質量</option>
+                <option value="水溶液全体の質量">水溶液全体の質量</option>
+                <option value="溶質が水にとける速さ">溶質が水にとける速さ</option>
+              </select>
+              <span class="quiz-result"></span>
+            </div>
+            <div class="field-q">
+              ② 「溶解度曲線」とは何か。
+              <select class="quiz-select" data-answer="温度と溶解度の関係を表したグラフ" onchange="checkQuiz(this)">
+                <option value="">選んでね</option>
+                <option value="温度と溶解度の関係を表したグラフ">温度と溶解度の関係を表したグラフ</option>
+                <option value="時間と質量の関係を表したグラフ">時間と質量の関係を表したグラフ</option>
+                <option value="溶質の粒子の形を表した図">溶質の粒子の形を表した図</option>
+              </select>
+              <span class="quiz-result"></span>
+            </div>
+            <div class="field-q">
+              ③ 「再結晶」とは何か。
+              <select class="quiz-select" data-answer="固体をいったん溶媒にとかし、再び結晶としてとり出す操作" onchange="checkQuiz(this)">
+                <option value="">選んでね</option>
+                <option value="固体をいったん溶媒にとかし、再び結晶としてとり出す操作">固体をいったん溶媒にとかし、再び結晶としてとり出す操作</option>
+                <option value="液体を冷やして固体にする操作">液体を冷やして固体にする操作</option>
+                <option value="水溶液をろ過して不純物を除く操作">水溶液をろ過して不純物を除く操作</option>
+              </select>
+              <span class="quiz-result"></span>
+            </div>
           </div>
           <!-- 溶解度グラフ（SVGで簡略表示） -->
           <div style="margin:10px 0 14px;">
@@ -1044,16 +1489,38 @@
           </table></div>
           <div style="margin-top:12px;">
             <div class="field-label">溶解度曲線の読み方</div>
-            <div class="field-q">① 横軸の温度をたどり、縦軸の数値を読みとると、その温度での（　　　　）がわかる。</div>
-            <textarea class="sm" placeholder="答えを書こう"></textarea>
-            <div class="field-q">② 2つの温度の溶解度の差が（　　　　　　　　　　　　）である。</div>
-            <textarea class="sm" placeholder="答えを書こう"></textarea>
+            <div class="field-q">
+              ① 横軸の温度をたどり、縦軸の数値を読みとると、その温度での
+              <select class="quiz-select" data-answer="溶解度" onchange="checkQuiz(this)">
+                <option value="">選んでね</option>
+                <option value="溶解度">溶解度</option>
+                <option value="質量パーセント濃度">質量パーセント濃度</option>
+                <option value="沸点">沸点</option>
+              </select>
+              <span class="quiz-result"></span>
+              がわかる。
+            </div>
+            <div class="field-q">
+              ② 2つの温度の溶解度の差が
+              <select class="quiz-select" data-answer="再結晶でとり出せる結晶の量" onchange="checkQuiz(this)">
+                <option value="">選んでね</option>
+                <option value="再結晶でとり出せる結晶の量">再結晶でとり出せる結晶の量</option>
+                <option value="水溶液全体の質量">水溶液全体の質量</option>
+                <option value="水の質量">水の質量</option>
+              </select>
+              <span class="quiz-result"></span>
+              である。
+            </div>
           </div>
         </div>
 
         <!-- 再結晶・計算問題（p.111〜112準拠） -->
         <div class="card">
           <div class="card-head"><span class="badge b-amber">計算</span><span class="card-title">再結晶でとり出せる結晶の量</span></div>
+          <div class="proc-box" style="background:#fff8ec; border-color:#c0a830;">
+            <strong>📌 場面</strong><br>
+            実験5で使った硝酸カリウムの水溶液が、理科室にまだ残っている。このまま捨ててしまうのはもったいない。水溶液を冷やすだけで、とけている硝酸カリウムをどれだけ結晶として取りもどせるだろうか。溶解度の差を使えば、捨てる前に「何gもどってくるか」を計算で見積もることができる。
+          </div>
           <div class="highlight hl-amber">
             <strong>とり出せる結晶の量 = 高温での溶解度 − 低温での溶解度</strong><br>
             <span style="font-size:13px; color:#4a2d08;">「いすとり」で考える：高温でとけていた分から、低温でとけられる分を引いた量が結晶になる</span>
@@ -1061,7 +1528,7 @@
           <!-- 例題（教科書p.111〜112準拠） -->
           <div class="field-label">例題（教科書 p.111〜112）</div>
           <div class="proc-box">
-            硝酸カリウムを60℃の水100gにとかして飽和水溶液をつくった。この飽和水溶液を20℃まで冷やすと、何gの硝酸カリウムが結晶として出てくるか。<br>
+            硝酸カリウムを60℃の水100gにとかして飽和水溶液をつくった。この飽和水溶液を20℃まで冷やすと、何gの硝酸カリウムが結晶として出てくるか（＝何g回収できるか）。<br>
             <br>
             ❶ 60℃の水100gにとける硝酸カリウム：溶解度表より <strong>109.2g</strong><br>
             ❷ 20℃の水100gにとける硝酸カリウム：溶解度表より <strong>31.6g</strong><br>
@@ -1070,13 +1537,30 @@
           <div class="grid2">
             <div>
               <div class="field-label">練習① （教科書 p.111）</div>
-              <div class="field-q">硝酸カリウムを80℃の水100gにとかした飽和水溶液を、40℃まで冷やすと何gの結晶が出るか？</div>
+              <div class="field-q">隣の班は80℃で実験していたため、80℃の水100gにとかした飽和水溶液が残っている。これを40℃まで冷やすと、硝酸カリウムは何g回収できるか？</div>
               <textarea placeholder="80℃の溶解度：　g&#10;40℃の溶解度：　g&#10;とり出せる量：　g − 　g = 　g"></textarea>
+              <button type="button" class="answer-toggle-btn" onclick="toggleAnswer('u4-ans1')">答えを見る</button>
+              <div id="u4-ans1" class="answer-box" style="display:none;">
+                <strong>考え方</strong><br>
+                とり出せる結晶の量は「高温でとけていた量」から「低温でとけられる量」を引いて求める。<br>
+                ここでは、80℃でとけていた硝酸カリウムのうち、40℃まで冷やしても水にとけきれない分が結晶として出てくる。<br><br>
+                ❶ 80℃の水100gにとける硝酸カリウム：溶解度表より 168.8g<br>
+                ❷ 40℃の水100gにとける硝酸カリウム：溶解度表より 63.9g<br>
+                ❸ とり出せる量 = 168.8g − 63.9g = <strong>104.9g</strong>
+              </div>
             </div>
             <div>
-              <div class="field-label">練習② （教科書 p.112）</div>
-              <div class="field-q">硝酸カリウムを60℃の水100gにとかして飽和水溶液をつくった。20℃まで冷やすと、何gの結晶が出るか（上の例題と同じ問題で確認！）</div>
+              <div class="field-label">練習②（検算）</div>
+              <div class="field-q">自分の班の水溶液（60℃の水100gにとかした飽和水溶液）を20℃まで冷やすと回収できる量は、本当に上の例題と同じ77.6gになるか、もう一度自分で計算して確かめよう。</div>
               <textarea placeholder="計算式と答えを書こう"></textarea>
+              <button type="button" class="answer-toggle-btn" onclick="toggleAnswer('u4-ans2')">答えを見る</button>
+              <div id="u4-ans2" class="answer-box" style="display:none;">
+                <strong>考え方</strong><br>
+                この問題は上の「例題」とまったく同じ条件（60℃→20℃）なので、例題と同じ求め方・同じ答えになるはずである。答え合わせとして使おう。<br><br>
+                ❶ 60℃の水100gにとける硝酸カリウム：溶解度表より 109.2g<br>
+                ❷ 20℃の水100gにとける硝酸カリウム：溶解度表より 31.6g<br>
+                ❸ とり出せる量 = 109.2g − 31.6g = <strong>77.6g</strong>
+              </div>
             </div>
           </div>
         </div>
@@ -1095,21 +1579,10 @@
           <textarea class="sm" placeholder="再結晶の考え方を使って説明しよう（食塩と砂糖の溶解度の温度変化のちがいに注目）..."></textarea>
         </div>
 
-        <!-- 考察 -->
-        <div class="card">
-          <div class="card-head"><span class="badge b-coral">考察</span><span class="card-title">なぜ A と B の試験管にちがいが生じたのか（p.110）</span></div>
-          <div class="field-label">① 食塩と硝酸カリウムで実験結果にちがいが出たのはなぜか？（溶解度の温度変化に着目して）</div>
-          <textarea placeholder="食塩…温度が上がっても溶解度はほぼ変わらないため…&#10;硝酸カリウム…温度が上がると溶解度が大きく変わるため…"></textarea>
-          <div class="field-label">② 再結晶はどんな物質の精製に向いていて、どんな場合は向いていないか？食塩を例に考えよう。</div>
-          <textarea placeholder="食塩は温度による溶解度変化が小さいため、冷やしても結晶があまり出てこない。そのため再結晶には（向いている・向いていない）..."></textarea>
-          <div class="field-label">③ 班・クラスでの話し合いで、気づいたこと・考えが深まったことを書こう。</div>
-          <textarea placeholder="他の班から出た考えや、先生のコメントで気づいたことなど..."></textarea>
-        </div>
-
         <!-- まとめ -->
         <div class="card">
           <div class="card-head"><span class="badge b-purple">まとめ</span><span style="font-size:12px;color:var(--text-muted);">使うキーワード：溶解度・飽和（水溶液）・再結晶・溶解度曲線</span></div>
-          <div style="font-size:13px; color:#0f6e56; font-weight:700; margin-bottom:6px;">📝 108ページの「？」への自分の考えをまとめよう。</div>
+          <div style="font-size:13px; color:#0f6e56; font-weight:700; margin-bottom:6px;">📝 水にとけている物質をとり出すため、水を蒸発させる以外にどのような方法があるか。自分の考えをまとめよう。</div>
           <textarea id="u4-matome" placeholder="水にとけている物質をとり出す方法（蒸発以外）を、再結晶の考え方を使って説明しよう。&#10;学習後に書こう：砂糖がとけていくようすを、言葉や図、モデルなどを使って表そう。"></textarea>
         </div>
                 <div class="card" style="border:2px solid #0f6e56; background:#f0faf6;">
@@ -1126,12 +1599,31 @@
       </div>
     </div>
 
+    <!-- 章のおわり：まとめ -->
+    <div class="notebook" id="nb-sol-matome">
+      <div class="nb-inner">
+        <div class="card" style="border:2px solid #0f6e56; background:#f0faf6;">
+          <div class="card-head"><span class="badge b-teal">第3章の課題</span></div>
+          <div class="highlight hl-sol task-highlight">海水から塩をとり出すには、どんな方法がある？</div>
+          <div style="font-size:13px; color:#0f6e56; margin-top:-6px; margin-bottom:14px;">水にとけるしくみと、とり出す方法を考えよう。</div>
+          <div class="field-label">学習後のまとめ</div>
+          <div class="field-q">単元1・単元2で学んだこと（とける・水溶液・溶解度・再結晶など）をふまえて、この章の課題にあらためて答えよう。章のはじめに書いた予想と、何が変わったかも書いてみよう。</div>
+          <textarea id="sol-matome-text" placeholder="自分の考えを書いてみよう"></textarea>
+        </div>
+        <button class="save-btn save-btn-sol" onclick="saveData('sol-matome')">💾 このノートを保存する</button>
+      </div>
+    </div>
+
   </div><!-- /notebook-area sol -->
 </div><!-- /panel-sol -->
 
 <!-- ===================== 状態変化の章 ===================== -->
 <div class="chapter-panel panel-sta" id="panel-sta">
   <div class="unit-bar">
+    <button class="unit-card unit-card-edge" id="utab-sta-yoso" onclick="switchUnit('sta','sta-yoso')">
+      <div class="uc-num">📝 章のはじめ</div>
+      <div class="uc-title">予想を書こう</div>
+    </button>
     <button class="unit-card" id="utab-u5" onclick="switchUnit('sta','u5')">
       <div class="uc-num">単元 1</div>
       <div class="uc-title">物質の状態変化</div>
@@ -1144,15 +1636,35 @@
       <div class="uc-num">単元 3</div>
       <div class="uc-title">状態変化が起こるときの温度とその利用</div>
     </button>
+    <button class="unit-card unit-card-edge" id="utab-sta-matome" onclick="switchUnit('sta','sta-matome')">
+      <div class="uc-num">📝 章のおわり</div>
+      <div class="uc-title">まとめを書こう</div>
+    </button>
   </div>
 
   <!-- 章の課題 -->
-  <div style="background:#f0e5fa; border-left:6px solid #7b3fa0; border-radius:0 12px 12px 0; padding:18px 28px; margin:18px 226px 0;">
-    <div style="font-size:12px; font-weight:700; color:#7b3fa0; letter-spacing:0.08em; margin-bottom:6px;">🔥 この章の課題</div>
-    <div style="font-size:18px; font-weight:700; color:#2e0f45; line-height:1.6;">冬に池の氷の下で、魚はなぜ生きていられるのか？<br><span style="font-size:14px; font-weight:400; color:#7b3fa0;">水の特別な性質と、状態変化を結びつけて考えよう。</span></div>
+  <div style="background:#f0e5fa; border-left:4px solid #7b3fa0; border-radius:0 8px 8px 0; margin:12px 226px 0; padding:10px 16px;">
+    <div style="font-size:12px; font-weight:700; color:#7b3fa0; letter-spacing:0.05em; margin-bottom:4px;">🔥 この章の課題</div>
+    <div style="font-size:15px; font-weight:700; color:#2e0f45; line-height:1.5;">冬に池の氷の下で、魚はなぜ生きていられるのか？</div>
+    <div style="font-size:12px; font-weight:400; color:#7b3fa0; margin-top:2px;">水の特別な性質と、状態変化を結びつけて考えよう。</div>
   </div>
 
   <div class="notebook-area">
+
+    <!-- 章のはじめ：予想 -->
+    <div class="notebook" id="nb-sta-yoso">
+      <div class="nb-inner">
+        <div class="card" style="border:2px solid #7b3fa0; background:#f3eafc;">
+          <div class="card-head"><span class="badge b-purple">第4章の課題</span></div>
+          <div class="highlight hl-sta task-highlight">冬に池の氷の下で、魚はなぜ生きていられるのか？</div>
+          <div style="font-size:13px; color:#7b3fa0; margin-top:-6px; margin-bottom:14px;">水の特別な性質と、状態変化を結びつけて考えよう。</div>
+          <div class="field-label">予想</div>
+          <div class="field-q">この章をくわしく学ぶ前に、今の自分の知識や経験から考えてみよう。あとで（章のおわりに）この予想を見直して、どう変わったか比べます。</div>
+          <textarea id="sta-yoso-text" placeholder="自分の考えを書いてみよう"></textarea>
+        </div>
+        <button class="save-btn save-btn-sta" onclick="saveData('sta-yoso')">💾 このノートを保存する</button>
+      </div>
+    </div>
 
     <!-- 単元5：物質の状態変化 p.116〜 -->
     <div class="notebook" id="nb-u5">
@@ -1160,7 +1672,7 @@
 
         <div class="card">
           <div class="card-head"><span class="badge b-purple">課題</span></div>
-          <div class="highlight hl-sta">身のまわりの物質も水のように姿を変えるだろうか。</div>
+          <div class="highlight hl-sta task-highlight">身のまわりの物質も水のように姿を変えるだろうか。</div>
           <div class="field-label">予想（水以外の物質が姿を変えるようすについて、例をあげて説明しよう）</div>
           <textarea id="u5-yoso" placeholder="知っている例をあげてみよう...（例：鉄を熱すると…、ドライアイスは…）"></textarea>
         </div>
@@ -1168,7 +1680,23 @@
         <div class="card">
           <div class="card-head"><span class="badge b-blue">ポイント整理</span><span class="card-title">物質の状態変化</span></div>
           <div class="highlight hl-sta">
-            物質は温度によって、固体・液体・気体と姿（<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　　</span>）を変えることができる。これを<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　　</span>という。
+            物質は温度によって、固体・液体・気体と姿（
+            <select class="quiz-select" data-answer="状態" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="状態">状態</option>
+              <option value="質量">質量</option>
+              <option value="種類">種類</option>
+            </select>
+            <span class="quiz-result"></span>
+            ）を変えることができる。これを
+            <select class="quiz-select" data-answer="状態変化" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="状態変化">状態変化</option>
+              <option value="化学変化">化学変化</option>
+              <option value="質量変化">質量変化</option>
+            </select>
+            <span class="quiz-result"></span>
+            という。
           </div>
           <!-- 状態変化の矢印図 SVG -->
           <div style="margin:10px 0 14px;">
@@ -1223,7 +1751,7 @@
 
         <div class="card">
           <div class="card-head"><span class="badge b-coral">考察</span></div>
-          <div class="field-label">① 食塩や鉄なども状態変化するか。教科書の例から説明しよう。</div>
+          <div class="field-label">① 食塩や鉄なども状態変化するか。自分の考えを説明しよう（教科書を参考にしてもOK）。</div>
           <textarea placeholder="食塩（塩化ナトリウム）・鉄・酸素などの例をもとに..."></textarea>
           <div class="field-label">② 状態変化するとき、物質そのものはどうなっているか。（粒子の考えを使って）</div>
           <textarea placeholder="粒子の数は変わるか？別の物質になるか？..."></textarea>
@@ -1231,7 +1759,7 @@
 
         <div class="card">
           <div class="card-head"><span class="badge b-purple">まとめ</span><span style="font-size:12px;color:var(--text-muted);">キーワード：状態変化・固体・液体・気体・粒子</span></div>
-          <div style="font-size:13px;color:#7b3fa0;font-weight:700;margin-bottom:6px;">📝 116ページの「？」への自分の考えをまとめよう。</div>
+          <div style="font-size:13px;color:#7b3fa0;font-weight:700;margin-bottom:6px;">📝 身のまわりの物質も水のように姿を変えるだろうか。自分の考えをまとめよう。</div>
           <textarea id="u5-matome" placeholder="身のまわりの物質も水のように姿を変えるかどうか、状態変化の考えを使ってまとめよう。"></textarea>
         </div>
 
@@ -1249,7 +1777,7 @@
 
         <div class="card">
           <div class="card-head"><span class="badge b-purple">課題</span></div>
-          <div class="highlight hl-sta">物質が状態変化するとき、体積や質量はどうなるだろうか。</div>
+          <div class="highlight hl-sta task-highlight">物質が状態変化するとき、体積や質量はどうなるだろうか。</div>
           <div class="field-label">予想（固体のロウがあたためられて液体になるときや、逆に液体が固体になるときを考えよう）</div>
           <textarea id="u6-yoso" placeholder="これまでに学んだことをもとに考えよう..."></textarea>
         </div>
@@ -1257,20 +1785,63 @@
         <div class="card">
           <div class="card-head"><span class="badge b-teal">実験 6</span><span class="card-title">ロウの状態変化と体積・質量の変化</span></div>
           <div class="info-row">
-            <div class="info-box"><strong>目的</strong>液体のロウを冷やして固体にしたとき、体積や質量がどのように変化するかを調べる。</div>
-            <div class="info-box"><strong>準備</strong>ロウ・ビーカー・電子てんびん・水・洗面器などの容器・アルミニウムはく・厚紙・油性ペン・ガスバーナー・三脚・金網</div>
+            <div class="info-box" style="font-size:16px;"><strong>目的</strong>液体のロウを冷やして固体にしたとき、体積や質量がどのように変化するかを調べる。</div>
+            <div class="info-box" style="font-size:16px;"><strong>準備</strong>ロウ・ビーカー・電子てんびん・水・洗面器などの容器・アルミニウムはく・厚紙・油性ペン・ガスバーナー・三脚・金網</div>
           </div>
+
+          <!-- 手順イラスト（3ステップ） -->
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0 14px;">
+            <div style="background:#fff8f0; border-radius:8px; padding:8px; text-align:center;">
+              <div style="font-size:12px; font-weight:700; color:#7a4b0a; margin-bottom:4px;">① 固体のロウ</div>
+              <svg viewBox="0 0 90 110" width="100%">
+                <rect x="20" y="30" width="50" height="60" rx="4" fill="#f0f0f0" stroke="#888" stroke-width="1.5"/>
+                <circle cx="32" cy="70" r="6" fill="#f5d98a" stroke="#c0a050" stroke-width="1"/>
+                <circle cx="48" cy="65" r="7" fill="#f5d98a" stroke="#c0a050" stroke-width="1"/>
+                <circle cx="60" cy="72" r="5" fill="#f5d98a" stroke="#c0a050" stroke-width="1"/>
+                <circle cx="40" cy="80" r="6" fill="#f5d98a" stroke="#c0a050" stroke-width="1"/>
+                <circle cx="58" cy="82" r="5" fill="#f5d98a" stroke="#c0a050" stroke-width="1"/>
+                <text x="45" y="103" font-size="9" text-anchor="middle" fill="#333">細かいロウ＋質量測定</text>
+              </svg>
+            </div>
+            <div style="background:#fdf0e0; border-radius:8px; padding:8px; text-align:center;">
+              <div style="font-size:12px; font-weight:700; color:#c07820; margin-bottom:4px;">② 加熱して液体に</div>
+              <svg viewBox="0 0 90 110" width="100%">
+                <rect x="20" y="20" width="50" height="70" rx="4" fill="#f0f0f0" stroke="#888" stroke-width="1.5"/>
+                <rect x="22" y="38" width="46" height="50" fill="#ffe9a8" opacity="0.85"/>
+                <line x1="20" y1="38" x2="70" y2="38" stroke="#e03030" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <text x="75" y="41" font-size="7" fill="#e03030">印</text>
+                <rect x="14" y="92" width="62" height="7" rx="2" fill="#aaa" stroke="#888" stroke-width="1"/>
+                <path d="M30 92 Q33 84 36 92" fill="#ffa040" opacity="0.9"/>
+                <path d="M44 92 Q47 82 50 92" fill="#ff6020" opacity="0.9"/>
+                <path d="M58 92 Q61 84 64 92" fill="#ffa040" opacity="0.9"/>
+                <text x="45" y="103" font-size="9" text-anchor="middle" fill="#333">加熱・液面に印</text>
+              </svg>
+            </div>
+            <div style="background:#eef4fb; border-radius:8px; padding:8px; text-align:center;">
+              <div style="font-size:12px; font-weight:700; color:#2563a8; margin-bottom:4px;">③ 冷やして固体に</div>
+              <svg viewBox="0 0 90 110" width="100%">
+                <rect x="20" y="20" width="50" height="70" rx="4" fill="#f0f0f0" stroke="#888" stroke-width="1.5"/>
+                <line x1="20" y1="38" x2="70" y2="38" stroke="#e03030" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <text x="75" y="41" font-size="7" fill="#e03030">印</text>
+                <rect x="22" y="38" width="46" height="50" fill="#f5d98a" opacity="0.9" stroke="#c0a050" stroke-width="1"/>
+                <ellipse cx="45" cy="38" rx="26" ry="14" fill="#fff" stroke="#e03030" stroke-width="2"/>
+                <text x="45" y="43" font-size="14" font-weight="700" text-anchor="middle" fill="#e03030">？</text>
+                <text x="45" y="103" font-size="7.5" text-anchor="middle" fill="#333">印のまわりはどうなる？</text>
+              </svg>
+            </div>
+          </div>
+
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 14px;">
             <div style="background:#fff8f0;border-radius:8px;padding:12px;">
-              <div style="font-size:12px;font-weight:700;color:#7a4b0a;margin-bottom:8px;">ステップ①　液体のロウの体積と質量</div>
-              <div style="font-size:13px;color:#5a5852;line-height:1.8;">
+              <div style="font-size:14px;font-weight:700;color:#7a4b0a;margin-bottom:8px;">ステップ①　液体のロウの体積と質量</div>
+              <div style="font-size:16px;color:#3a3833;line-height:1.9;">
                 ❶ 細かくくだいたロウをビーカーに入れ、質量をはかる。<br>
                 ❷ ガスバーナーで加熱し、ロウを液体にする。液面の高さに印をつけ、ビーカーごと質量をはかる。
               </div>
             </div>
             <div style="background:#f0f4fa;border-radius:8px;padding:12px;">
-              <div style="font-size:12px;font-weight:700;color:#2563a8;margin-bottom:8px;">ステップ②　固体のロウの体積と質量</div>
-              <div style="font-size:13px;color:#5a5852;line-height:1.8;">
+              <div style="font-size:14px;font-weight:700;color:#2563a8;margin-bottom:8px;">ステップ②　固体のロウの体積と質量</div>
+              <div style="font-size:16px;color:#3a3833;line-height:1.9;">
                 ❸ ビーカーをゆっくり冷やし、ロウを固体にする。<br>
                 ❹ 固まったロウのようすをスケッチし、体積の変化を比べる。<br>
                 ❺ ビーカーごと固体のロウの質量をはかる。
@@ -1289,60 +1860,210 @@
         </div>
 
         <div class="card">
+          <div class="card-head"><span class="badge b-coral">考察</span></div>
+          <div class="field-label">① ロウが液体→固体になるとき、体積と質量はどう変わったか？実験結果をもとに説明しよう。</div>
+          <textarea placeholder="体積は（大きく・小さく）なった。質量は（変わった・変わらなかった）。なぜなら..."></textarea>
+          <div class="field-label">② 体積が変わるのに質量が変わらないのはなぜだろうか。自分の考えを書いてみよう。</div>
+          <textarea placeholder="自分の考えを書いてみよう"></textarea>
+        </div>
+
+        <!-- 調べよう：エタノールの体積変化 -->
+        <div class="card">
+          <div class="card-head"><span class="badge b-teal">調べよう</span><span class="card-title">エタノールをあたためたときの体積の変化を調べよう</span></div>
+          <div class="proc-box" style="font-size:16px; line-height:2.1;">
+            <strong>① ふくろに入れる</strong><br>
+            ポリエチレンのふくろに少量のエタノールを入れて、ふくろの口を閉じる。<br><br>
+            <strong>② 湯をかける</strong><br>
+            ポリエチレンのふくろをバットに入れて、ふくろに湯をかける。<br><br>
+            <strong>③ ようすを観察する</strong><br>
+            ふくろのふくらみ方や、ふくろの中のエタノールのようすを観察する。
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:10px 0 14px;">
+            <div style="background:#eef4fb; border-radius:8px; padding:8px; text-align:center;">
+              <div style="font-size:13px; font-weight:700; color:#2563a8; margin-bottom:4px;">湯をかける前</div>
+              <svg viewBox="0 0 140 90" width="100%">
+                <rect x="10" y="50" width="120" height="32" rx="4" fill="#cfd2d6" stroke="#888" stroke-width="1.5"/>
+                <ellipse cx="70" cy="55" rx="38" ry="14" fill="#eaf4ff" stroke="#5a8fc0" stroke-width="1.5" opacity="0.9"/>
+                <circle cx="55" cy="55" r="4" fill="#aee0ff" opacity="0.8"/>
+                <text x="70" y="80" font-size="9" text-anchor="middle" fill="#333">少量のエタノール</text>
+              </svg>
+            </div>
+            <div style="background:#fdf0e0; border-radius:8px; padding:8px; text-align:center;">
+              <div style="font-size:13px; font-weight:700; color:#c07820; margin-bottom:4px;">湯をかけた後</div>
+              <svg viewBox="0 0 140 90" width="100%">
+                <rect x="10" y="50" width="120" height="32" rx="4" fill="#cfd2d6" stroke="#888" stroke-width="1.5"/>
+                <circle cx="70" cy="45" r="28" fill="#fff" stroke="#c07820" stroke-width="2"/>
+                <text x="70" y="55" font-size="26" font-weight="700" text-anchor="middle" fill="#c07820">？</text>
+              </svg>
+            </div>
+          </div>
+          <div class="field-label">観察したこと</div>
+          <textarea class="sm" placeholder="ふくろのふくらみ方や、中のエタノールのようすを言葉で書こう"></textarea>
+        </div>
+
+        <div class="card">
           <div class="card-head"><span class="badge b-blue">ポイント整理</span><span class="card-title">粒子のモデルで考える</span></div>
           <div class="highlight hl-sta">
-            状態変化が起こっても、粒子の<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　</span>は変わらないので、<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　</span>は変化しない。<br>
-            しかし、粒子の<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　　</span>が変わるので、<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　</span>は変化する。
+            状態変化が起こっても、粒子の
+            <select class="quiz-select" data-answer="数" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="数">数</option>
+              <option value="大きさ">大きさ</option>
+              <option value="間隔">間隔</option>
+            </select>
+            <span class="quiz-result"></span>
+            は変わらないので、
+            <select class="quiz-select" data-answer="質量" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="質量">質量</option>
+              <option value="体積">体積</option>
+              <option value="密度">密度</option>
+            </select>
+            <span class="quiz-result"></span>
+            は変化しない。<br>
+            しかし、粒子の
+            <select class="quiz-select" data-answer="間隔" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="間隔">間隔</option>
+              <option value="数">数</option>
+              <option value="重さ">重さ</option>
+            </select>
+            <span class="quiz-result"></span>
+            が変わるので、
+            <select class="quiz-select" data-answer="体積" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="体積">体積</option>
+              <option value="質量">質量</option>
+              <option value="種類">種類</option>
+            </select>
+            <span class="quiz-result"></span>
+            は変化する。
           </div>
-          <!-- 粒子モデル図 -->
-          <svg viewBox="0 0 440 120" width="100%" style="background:#f9f8f5;border-radius:8px;border:1px solid #e2e0d8;margin:8px 0 14px;">
-            <!-- 固体ロウ -->
-            <rect x="10" y="15" width="110" height="90" rx="6" fill="#d4eafc" stroke="#2563a8" stroke-width="1.5"/>
-            <text x="65" y="30" font-size="10" text-anchor="middle" fill="#2563a8" font-weight="700">固体（冷やす前）</text>
-            <circle cx="35" cy="55" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="55" cy="55" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="75" cy="55" r="8" fill="#7b3fa0" opacity="0.8"/>
-            <circle cx="35" cy="75" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="55" cy="75" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="75" cy="75" r="8" fill="#7b3fa0" opacity="0.8"/>
-            <circle cx="45" cy="90" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="65" cy="90" r="8" fill="#7b3fa0" opacity="0.8"/>
-            <text x="65" y="108" font-size="9" text-anchor="middle" fill="#5a5852">体積55cm³ 質量50g</text>
-            <!-- 矢印 -->
-            <text x="135" y="64" font-size="20" text-anchor="middle" fill="#e03030">→</text>
-            <text x="135" y="50" font-size="9" text-anchor="middle" fill="#e03030">加熱</text>
-            <!-- 液体ロウ -->
-            <rect x="155" y="15" width="110" height="90" rx="6" fill="#d4f0e4" stroke="#0f6e56" stroke-width="1.5"/>
-            <text x="210" y="30" font-size="10" text-anchor="middle" fill="#0f6e56" font-weight="700">液体（とけた）</text>
-            <circle cx="175" cy="60" r="8" fill="#7b3fa0" opacity="0.7"/><circle cx="200" cy="52" r="8" fill="#7b3fa0" opacity="0.7"/><circle cx="225" cy="62" r="8" fill="#7b3fa0" opacity="0.7"/>
-            <circle cx="182" cy="82" r="8" fill="#7b3fa0" opacity="0.7"/><circle cx="212" cy="78" r="8" fill="#7b3fa0" opacity="0.7"/><circle cx="238" cy="70" r="8" fill="#7b3fa0" opacity="0.7"/>
-            <circle cx="195" cy="96" r="8" fill="#7b3fa0" opacity="0.7"/><circle cx="222" cy="94" r="8" fill="#7b3fa0" opacity="0.7"/>
-            <text x="210" y="108" font-size="9" text-anchor="middle" fill="#5a5852">体積62cm³ 質量50g</text>
-            <!-- 矢印 -->
-            <text x="280" y="64" font-size="20" text-anchor="middle" fill="#2563a8">→</text>
-            <text x="280" y="50" font-size="9" text-anchor="middle" fill="#2563a8">冷却</text>
-            <!-- 固体ロウ（戻る）-->
-            <rect x="300" y="15" width="130" height="90" rx="6" fill="#f3eafc" stroke="#7b3fa0" stroke-width="1.5"/>
-            <text x="365" y="30" font-size="10" text-anchor="middle" fill="#7b3fa0" font-weight="700">固体（冷えた）</text>
-            <circle cx="325" cy="55" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="347" cy="55" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="369" cy="55" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="391" cy="55" r="8" fill="#7b3fa0" opacity="0.8"/>
-            <circle cx="325" cy="75" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="347" cy="75" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="369" cy="75" r="8" fill="#7b3fa0" opacity="0.8"/><circle cx="391" cy="75" r="8" fill="#7b3fa0" opacity="0.8"/>
-            <text x="365" y="108" font-size="9" text-anchor="middle" fill="#5a5852">体積55cm³ 質量50g</text>
-          </svg>
+
+          <div class="highlight hl-sta" style="margin-top:10px;">
+            <strong>粒子の集まり方と体積</strong><br>
+            物質の体積は、物質をつくっている粒子の集まり方によって変わる。<br>
+            粒子が小さな集まりになっていれば、体積は
+            <select class="quiz-select" data-answer="小さい" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="小さい">小さい</option>
+              <option value="大きい">大きい</option>
+              <option value="変わらない">変わらない</option>
+            </select>
+            <span class="quiz-result"></span>
+            が、粒子と粒子の間が広がると、体積は
+            <select class="quiz-select" data-answer="大きく" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="大きく">大きく</option>
+              <option value="小さく">小さく</option>
+              <option value="変わらず">変わらず</option>
+            </select>
+            <span class="quiz-result"></span>
+            なる。
+          </div>
+
+          <!-- モデルを使って考察しよう（実習） -->
+          <div style="margin: 10px 0 14px;">
+            <div style="font-size:13px; font-weight:700; color:#7b3fa0; margin-bottom:6px;">🟣 モデルを使って考察しよう</div>
+            <div style="font-size:13px; color:#5a5852; margin-bottom:10px;">次の①②の状態変化が起こるとき、質量と体積のようすを粒子のモデルでかこう。図の中をクリックして粒子（●）を置いてみよう。</div>
+
+            <div style="font-size:13px; font-weight:700; color:#333; margin-bottom:6px;">① 固体のロウをあたためて、液体にしたときのロウの質量と体積のようす</div>
+            <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:14px; background:#f9f8f5; border-radius:8px; border:1px solid #e2e0d8; padding:14px; margin-bottom:14px;">
+              <div style="text-align:center;">
+                <div style="font-size:12px; font-weight:700; color:#333; margin-bottom:6px;">固体のとき</div>
+                <svg class="particle-beaker" data-beaker="p4" viewBox="0 0 140 110" width="100%" style="background:#fff; border-radius:6px; cursor:crosshair;" onclick="addParticle(event,'p4')">
+                  <rect x="20" y="15" width="100" height="80" rx="4" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <g id="particles-p4"></g>
+                </svg>
+                <div style="display:flex; gap:6px; justify-content:center; margin-top:6px;">
+                  <button onclick="undoParticle('p4')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+                  <button onclick="clearParticles('p4')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
+                </div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:12px; font-weight:700; color:#333; margin-bottom:6px;">液体のとき</div>
+                <svg class="particle-beaker" data-beaker="p5" viewBox="0 0 140 110" width="100%" style="background:#fff; border-radius:6px; cursor:crosshair;" onclick="addParticle(event,'p5')">
+                  <rect x="20" y="15" width="100" height="80" rx="4" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <g id="particles-p5"></g>
+                </svg>
+                <div style="display:flex; gap:6px; justify-content:center; margin-top:6px;">
+                  <button onclick="undoParticle('p5')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+                  <button onclick="clearParticles('p5')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
+                </div>
+              </div>
+            </div>
+            <div class="field-label" style="margin-top:8px;">①のように考えた理由</div>
+            <textarea class="sm" placeholder="粒子の数・間隔をどう変えて表現した？質量と体積はそれぞれどうなると考えた？理由も書こう"></textarea>
+
+            <div style="font-size:13px; font-weight:700; color:#333; margin-bottom:6px; margin-top:14px;">② 液体のエタノールをあたためて、気体にしたときのエタノールの質量と体積のようす</div>
+            <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:14px; background:#f9f8f5; border-radius:8px; border:1px solid #e2e0d8; padding:14px;">
+              <div style="text-align:center;">
+                <div style="font-size:12px; font-weight:700; color:#333; margin-bottom:6px;">液体のとき</div>
+                <svg class="particle-beaker" data-beaker="p6" viewBox="0 0 140 110" width="100%" style="background:#fff; border-radius:6px; cursor:crosshair;" onclick="addParticle(event,'p6')">
+                  <ellipse cx="70" cy="55" rx="42" ry="22" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <g id="particles-p6"></g>
+                </svg>
+                <div style="display:flex; gap:6px; justify-content:center; margin-top:6px;">
+                  <button onclick="undoParticle('p6')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+                  <button onclick="clearParticles('p6')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
+                </div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:12px; font-weight:700; color:#333; margin-bottom:6px;">気体のとき</div>
+                <svg class="particle-beaker" data-beaker="p7" viewBox="0 0 140 110" width="100%" style="background:#fff; border-radius:6px; cursor:crosshair;" onclick="addParticle(event,'p7')">
+                  <ellipse cx="70" cy="55" rx="65" ry="48" fill="#e0f4ff" stroke="#5a8fc0" stroke-width="1.5" pointer-events="none"/>
+                  <g id="particles-p7"></g>
+                </svg>
+                <div style="display:flex; gap:6px; justify-content:center; margin-top:6px;">
+                  <button onclick="undoParticle('p7')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+                  <button onclick="clearParticles('p7')" style="font-size:11px; padding:4px 10px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
+                </div>
+              </div>
+            </div>
+            <div class="field-label" style="margin-top:8px;">②のように考えた理由</div>
+            <textarea class="sm" placeholder="粒子の数・間隔をどう変えて表現した？質量と体積はそれぞれどうなると考えた？理由も書こう"></textarea>
+            <input type="hidden" id="particles-p4-data" value="">
+            <input type="hidden" id="particles-p5-data" value="">
+            <input type="hidden" id="particles-p6-data" value="">
+            <input type="hidden" id="particles-p7-data" value="">
+          </div>
+
           <div class="field-label">水の特別な性質（教科書 p.122〜）</div>
           <div class="proc-box">
-            多くの物質は液体→固体になると体積が<strong>小さく</strong>なる。<br>
-            しかし<strong>水</strong>は例外で、液体→固体（氷）になると体積が<strong>大きく</strong>なる（密度が小さくなる）。<br>
+            多くの物質は液体→固体になると体積が
+            <select class="quiz-select" data-answer="小さく" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="小さく">小さく</option>
+              <option value="大きく">大きく</option>
+              <option value="変わらず">変わらず</option>
+            </select>
+            <span class="quiz-result"></span>
+            なる。<br>
+            しかし
+            <select class="quiz-select" data-answer="水" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="水">水</option>
+              <option value="鉄">鉄</option>
+              <option value="エタノール">エタノール</option>
+            </select>
+            <span class="quiz-result"></span>
+            は例外で、液体→固体（氷）になると体積が
+            <select class="quiz-select" data-answer="大きく" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="大きく">大きく</option>
+              <option value="小さく">小さく</option>
+              <option value="変わらず">変わらず</option>
+            </select>
+            <span class="quiz-result"></span>
+            なる（密度が小さくなる）。<br>
             → これが冬に湖が凍っても湖中の生き物が生きていられる理由！
           </div>
           <textarea class="sm" placeholder="水の特別な性質について、粒子モデルをもとに自分の言葉でまとめよう..."></textarea>
         </div>
 
         <div class="card">
-          <div class="card-head"><span class="badge b-coral">考察</span></div>
-          <div class="field-label">① ロウが液体→固体になるとき、体積と質量はどう変わったか？実験結果をもとに説明しよう。</div>
-          <textarea placeholder="体積は（大きく・小さく）なった。質量は（変わった・変わらなかった）。なぜなら..."></textarea>
-          <div class="field-label">② 粒子のモデルを使って、体積が変わるのに質量が変わらない理由を説明しよう。</div>
-          <textarea placeholder="粒子の数は変わらないので…粒子の間隔が変わるので…"></textarea>
-        </div>
-
-        <div class="card">
           <div class="card-head"><span class="badge b-purple">まとめ</span><span style="font-size:12px;color:var(--text-muted);">キーワード：状態変化・体積・質量・粒子</span></div>
-          <div style="font-size:13px;color:#7b3fa0;font-weight:700;margin-bottom:6px;">📝 118ページの「？」への自分の考えをまとめよう。</div>
+          <div style="font-size:13px;color:#7b3fa0;font-weight:700;margin-bottom:6px;">📝 物質が状態変化するとき、体積や質量はどうなるだろうか。自分の考えをまとめよう。</div>
           <textarea id="u6-matome" placeholder="状態変化するとき体積や質量はどうなるか、粒子のモデルを使って説明しよう。（使うキーワード→状態変化・質量・体積）"></textarea>
         </div>
 
@@ -1360,7 +2081,7 @@
 
         <div class="card">
           <div class="card-head"><span class="badge b-purple">課題</span></div>
-          <div class="highlight hl-sta">液体どうしの混合物を分けるには、どのようにすればよいだろうか。</div>
+          <div class="highlight hl-sta task-highlight">液体どうしの混合物を分けるには、どのようにすればよいだろうか。</div>
           <div class="field-label">予想（水とエタノールの沸点のちがいに着目して考えよう）</div>
           <textarea id="u7-yoso" placeholder="みりんやワインは、エタノールや水などの液体どうしが混じり合った身近な混合物。水とエタノールの沸点のちがいを利用してこれらを分けることができるか考えよう..."></textarea>
         </div>
@@ -1368,52 +2089,190 @@
         <div class="card">
           <div class="card-head"><span class="badge b-blue">ポイント整理</span><span class="card-title">沸点と融点（p.124〜125）</span></div>
           <div class="highlight hl-sta">
-            液体が沸騰し始める温度 →&nbsp;<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　</span><br>
-            固体がとけ始める（液体に変化する）温度 →&nbsp;<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　</span><br>
-            沸点や融点は物質の種類によって<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　　</span>いるため、物質を区別する手がかりになる。
+            液体が沸騰し始める温度 →
+            <select class="quiz-select" data-answer="沸点" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="沸点">沸点</option>
+              <option value="融点">融点</option>
+              <option value="氷点">氷点</option>
+            </select>
+            <span class="quiz-result"></span>
+            <br>
+            固体がとけ始める（液体に変化する）温度 →
+            <select class="quiz-select" data-answer="融点" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="融点">融点</option>
+              <option value="沸点">沸点</option>
+              <option value="氷点">氷点</option>
+            </select>
+            <span class="quiz-result"></span>
+            <br>
+            沸点や融点は物質の種類によって
+            <select class="quiz-select" data-answer="決まって" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="決まって">決まって</option>
+              <option value="毎回変わって">毎回変わって</option>
+              <option value="同じになって">同じになって</option>
+            </select>
+            <span class="quiz-result"></span>
+            いるため、物質を区別する手がかりになる。
           </div>
           <!-- 主な物質の沸点・融点表 -->
           <div class="field-label">主な物質の沸点・融点（p.126 表1より）</div>
           <div class="tbl-wrap"><table>
-            <thead><tr><th>物質</th><th>融点(℃)</th><th>沸点(℃)</th><th>常温での状態</th></tr></thead>
+            <thead><tr><th>物質</th><th>融点(℃)</th><th>沸点(℃)</th><th>常温（約25℃）での状態</th></tr></thead>
             <tbody>
-              <tr><td class="lbl">鉄</td><td>1535</td><td>2750</td><td><textarea class="sm" placeholder="固体・液体・気体"></textarea></td></tr>
-              <tr><td class="lbl">アルミニウム</td><td>660</td><td>2467</td><td><textarea class="sm" placeholder="固体・液体・気体"></textarea></td></tr>
-              <tr><td class="lbl">食塩（塩化Na）</td><td>801</td><td>1413</td><td><textarea class="sm" placeholder="固体・液体・気体"></textarea></td></tr>
-              <tr><td class="lbl">エタノール</td><td>−115</td><td>78</td><td><textarea class="sm" placeholder="固体・液体・気体"></textarea></td></tr>
-              <tr><td class="lbl">水</td><td>0</td><td>100</td><td><textarea class="sm" placeholder="固体・液体・気体"></textarea></td></tr>
-              <tr><td class="lbl">酸素</td><td>−218</td><td>−183</td><td><textarea class="sm" placeholder="固体・液体・気体"></textarea></td></tr>
-              <tr><td class="lbl">窒素</td><td>−210</td><td>−196</td><td><textarea class="sm" placeholder="固体・液体・気体"></textarea></td></tr>
+              <tr><td class="lbl">鉄</td><td>1535</td><td>2750</td><td>
+                <select class="quiz-select" data-answer="固体" onchange="checkQuiz(this)">
+                  <option value="">選んでね</option>
+                  <option value="固体">固体</option>
+                  <option value="液体">液体</option>
+                  <option value="気体">気体</option>
+                </select>
+                <span class="quiz-result"></span>
+              </td></tr>
+              <tr><td class="lbl">アルミニウム</td><td>660</td><td>2467</td><td>
+                <select class="quiz-select" data-answer="固体" onchange="checkQuiz(this)">
+                  <option value="">選んでね</option>
+                  <option value="固体">固体</option>
+                  <option value="液体">液体</option>
+                  <option value="気体">気体</option>
+                </select>
+                <span class="quiz-result"></span>
+              </td></tr>
+              <tr><td class="lbl">食塩（塩化Na）</td><td>801</td><td>1413</td><td>
+                <select class="quiz-select" data-answer="固体" onchange="checkQuiz(this)">
+                  <option value="">選んでね</option>
+                  <option value="固体">固体</option>
+                  <option value="液体">液体</option>
+                  <option value="気体">気体</option>
+                </select>
+                <span class="quiz-result"></span>
+              </td></tr>
+              <tr><td class="lbl">エタノール</td><td>−115</td><td>78</td><td>
+                <select class="quiz-select" data-answer="液体" onchange="checkQuiz(this)">
+                  <option value="">選んでね</option>
+                  <option value="固体">固体</option>
+                  <option value="液体">液体</option>
+                  <option value="気体">気体</option>
+                </select>
+                <span class="quiz-result"></span>
+              </td></tr>
+              <tr><td class="lbl">水</td><td>0</td><td>100</td><td>
+                <select class="quiz-select" data-answer="液体" onchange="checkQuiz(this)">
+                  <option value="">選んでね</option>
+                  <option value="固体">固体</option>
+                  <option value="液体">液体</option>
+                  <option value="気体">気体</option>
+                </select>
+                <span class="quiz-result"></span>
+              </td></tr>
+              <tr><td class="lbl">酸素</td><td>−218</td><td>−183</td><td>
+                <select class="quiz-select" data-answer="気体" onchange="checkQuiz(this)">
+                  <option value="">選んでね</option>
+                  <option value="固体">固体</option>
+                  <option value="液体">液体</option>
+                  <option value="気体">気体</option>
+                </select>
+                <span class="quiz-result"></span>
+              </td></tr>
+              <tr><td class="lbl">窒素</td><td>−210</td><td>−196</td><td>
+                <select class="quiz-select" data-answer="気体" onchange="checkQuiz(this)">
+                  <option value="">選んでね</option>
+                  <option value="固体">固体</option>
+                  <option value="液体">液体</option>
+                  <option value="気体">気体</option>
+                </select>
+                <span class="quiz-result"></span>
+              </td></tr>
             </tbody>
           </table></div>
           <div style="margin-top:10px;">
-            <div class="field-label">グラフの読み取り（水を加熱したときの温度変化 p.124）</div>
+            <div class="field-label">グラフの読み取り（p.124）</div>
+            <div style="display:inline-flex; align-items:center; gap:6px; background:#e0f0ff; border:1.5px solid #5a8fc0; border-radius:99px; padding:6px 16px; margin-bottom:8px; font-size:14px; font-weight:700; color:#2563a8;">
+              💧 このグラフは「水」を加熱したときの温度変化です
+            </div>
             <!-- 水の加熱グラフ SVG -->
-            <svg viewBox="0 0 380 180" width="100%" style="background:#f9f8f5;border-radius:8px;border:1px solid #e2e0d8;margin:6px 0;">
-              <line x1="50" y1="20" x2="50" y2="155" stroke="#555" stroke-width="1.5"/>
-              <line x1="50" y1="155" x2="360" y2="155" stroke="#555" stroke-width="1.5"/>
-              <text x="22" y="95" font-size="9" text-anchor="middle" fill="#333" transform="rotate(-90,22,95)">温度(℃)</text>
-              <text x="205" y="173" font-size="9" text-anchor="middle" fill="#333">加熱した時間（分）</text>
-              <text x="46" y="159" font-size="8" text-anchor="end" fill="#555">0</text>
-              <text x="46" y="120" font-size="8" text-anchor="end" fill="#555">0℃</text>
-              <text x="46" y="45" font-size="8" text-anchor="end" fill="#555">100℃</text>
+            <svg viewBox="0 0 380 195" width="100%" style="background:#f9f8f5;border-radius:8px;border:1px solid #e2e0d8;margin:6px 0;">
+              <text x="190" y="14" font-size="11" font-weight="700" text-anchor="middle" fill="#2563a8">水を加熱したときの温度変化</text>
+              <line x1="50" y1="35" x2="50" y2="170" stroke="#555" stroke-width="1.5"/>
+              <line x1="50" y1="170" x2="360" y2="170" stroke="#555" stroke-width="1.5"/>
+              <text x="22" y="110" font-size="9" text-anchor="middle" fill="#333" transform="rotate(-90,22,110)">温度(℃)</text>
+              <text x="205" y="188" font-size="9" text-anchor="middle" fill="#333">加熱した時間（分）</text>
+              <text x="46" y="174" font-size="8" text-anchor="end" fill="#555">0</text>
+              <text x="46" y="135" font-size="8" text-anchor="end" fill="#555">0℃</text>
+              <text x="46" y="60" font-size="8" text-anchor="end" fill="#555">100℃</text>
               <!-- グラフ線：氷→水→水蒸気 -->
-              <polyline points="55,145 90,120 90,120 150,120 150,120 200,44 260,44 310,30" fill="none" stroke="#e03030" stroke-width="2"/>
+              <polyline points="55,160 90,135 90,135 150,135 150,135 200,59 260,59 310,45" fill="none" stroke="#e03030" stroke-width="2"/>
               <!-- 補助線 -->
-              <line x1="50" y1="120" x2="150" y2="120" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
-              <line x1="50" y1="44" x2="260" y2="44" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
-              <line x1="90" y1="120" x2="90" y2="155" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
-              <line x1="150" y1="120" x2="150" y2="155" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
-              <line x1="200" y1="44" x2="200" y2="155" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
-              <line x1="260" y1="44" x2="260" y2="155" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+              <line x1="50" y1="135" x2="150" y2="135" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+              <line x1="50" y1="59" x2="260" y2="59" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+              <line x1="90" y1="135" x2="90" y2="170" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+              <line x1="150" y1="135" x2="150" y2="170" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+              <line x1="200" y1="59" x2="200" y2="170" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+              <line x1="260" y1="59" x2="260" y2="170" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
               <!-- ラベル -->
-              <text x="70" y="138" font-size="8" fill="#2563a8">氷がとけ始める</text>
-              <text x="110" y="115" font-size="8" fill="#0f6e56">0℃のまま</text>
-              <text x="155" y="138" font-size="8" fill="#2563a8">全部とけて水に</text>
-              <text x="215" y="40" font-size="8" fill="#e03030">100℃で沸騰</text>
+              <text x="70" y="153" font-size="8" fill="#2563a8">氷がとけ始める</text>
+              <text x="110" y="130" font-size="8" fill="#0f6e56">0℃のまま</text>
+              <text x="155" y="153" font-size="8" fill="#2563a8">全部とけて水に</text>
+              <text x="215" y="55" font-size="8" fill="#e03030">100℃で沸騰</text>
             </svg>
             <div class="field-label">グラフから読み取れることをまとめよう</div>
             <textarea class="sm" placeholder="0℃のときは…100℃のときは…温度が変わらない理由は..."></textarea>
+            <div class="field-label" style="margin-top:10px;">予想：水とエタノールの混合物を加熱したら、このグラフはどうなると思う？</div>
+            <div style="font-size:13px; color:#5a5852; margin-bottom:8px;">グラフの中をクリックして、自分の予想する温度変化の線をかいてみよう。</div>
+            <svg class="graph-plot" data-graph="g0" viewBox="0 0 400 200" width="100%" style="background:#fff;border:1px solid #ccc;border-radius:8px;margin:6px 0;cursor:crosshair;" onclick="addGraphPoint(event,'g0')">
+              <line x1="50" y1="15" x2="50" y2="170" stroke="#aaa" stroke-width="1.5" pointer-events="none"/>
+              <line x1="50" y1="170" x2="385" y2="170" stroke="#aaa" stroke-width="1.5" pointer-events="none"/>
+              <text x="44" y="174" font-size="8" text-anchor="end" fill="#888" pointer-events="none">0</text>
+              <text x="44" y="140" font-size="8" text-anchor="end" fill="#888" pointer-events="none">20</text>
+              <text x="44" y="110" font-size="8" text-anchor="end" fill="#888" pointer-events="none">40</text>
+              <text x="44" y="80" font-size="8" text-anchor="end" fill="#888" pointer-events="none">60</text>
+              <text x="44" y="50" font-size="8" text-anchor="end" fill="#888" pointer-events="none">80</text>
+              <text x="44" y="20" font-size="8" text-anchor="end" fill="#888" pointer-events="none">100</text>
+              <text x="80" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">2</text>
+              <text x="120" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">4</text>
+              <text x="160" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">6</text>
+              <text x="200" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">8</text>
+              <text x="240" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">10</text>
+              <text x="280" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">12</text>
+              <text x="320" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">14</text>
+              <text x="360" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">16</text>
+              <line x1="80" y1="15" x2="80" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="120" y1="15" x2="120" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="160" y1="15" x2="160" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="200" y1="15" x2="200" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="240" y1="15" x2="240" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="280" y1="15" x2="280" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="320" y1="15" x2="320" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="360" y1="15" x2="360" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="50" y1="140" x2="385" y2="140" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="50" y1="110" x2="385" y2="110" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="50" y1="80" x2="385" y2="80" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="50" y1="50" x2="385" y2="50" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <line x1="50" y1="20" x2="385" y2="20" stroke="#eee" stroke-width="1" pointer-events="none"/>
+              <text x="20" y="95" font-size="9" text-anchor="middle" fill="#555" transform="rotate(-90,20,95)" pointer-events="none">温度(℃)</text>
+              <text x="217" y="196" font-size="9" text-anchor="middle" fill="#555" pointer-events="none">加熱した時間（分）</text>
+              <!-- エタノールの沸点ライン -->
+              <line x1="50" y1="80" x2="385" y2="80" stroke="#7b3fa0" stroke-width="1" stroke-dasharray="5,3" opacity="0.5" pointer-events="none"/>
+              <text x="387" y="83" font-size="8" fill="#7b3fa0" pointer-events="none">78℃</text>
+              <!-- 水の沸点ライン -->
+              <line x1="50" y1="20" x2="385" y2="20" stroke="#e03030" stroke-width="1" stroke-dasharray="5,3" opacity="0.5" pointer-events="none"/>
+              <text x="387" y="23" font-size="8" fill="#e03030" pointer-events="none">100℃</text>
+              <polyline id="graph-line-g0" fill="none" stroke="#7b3fa0" stroke-width="2" points="" pointer-events="none"/>
+              <g id="graph-points-g0"></g>
+            </svg>
+            <div style="font-size:11px; color:#5a5852; margin:2px 0 6px;">
+              <span style="color:#e03030;">- - -</span> 水の沸点（100℃）　
+              <span style="color:#7b3fa0;">- - -</span> エタノールの沸点（78℃）
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button type="button" onclick="undoGraphPoint('g0')" style="font-size:12px; padding:5px 12px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+              <button type="button" onclick="clearGraphPoints('g0')" style="font-size:12px; padding:5px 12px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
+            </div>
+            <input type="hidden" id="graph-g0-data" value="">
+            <div class="field-label" style="margin-top:10px;">そう予想した理由</div>
+            <textarea class="sm" placeholder="水だけのときと同じように、温度が一定になるところがあると思う？それとも…自分の予想を書いてみよう"></textarea>
           </div>
         </div>
 
@@ -1423,6 +2282,40 @@
             <div class="info-box"><strong>目的</strong>混合物を加熱して、発生する気体の温度をはかり、得られた液体の性質を調べて、混合物から純粋な物質をとり出すことができるか考える。</div>
             <div class="info-box"><strong>準備</strong>水・エタノール・枝つきフラスコ・メスシリンダー・試験管×3・試験管立て・ビーカー・温度計・あなあきゴム栓・ゴム管・ガラス管・沸騰石・ガスバーナー・スタンド・支持棒・自在ばさみ・金網・蒸発皿・ろ紙・マッチ・ピンセット</div>
           </div>
+
+          <!-- 蒸留装置のイラスト -->
+          <div style="background:#f9f8f5; border:1px solid #e2e0d8; border-radius:8px; padding:10px; margin:10px 0 14px; text-align:center;">
+            <div style="font-size:12px; font-weight:700; color:#7a4b0a; margin-bottom:6px;">実験装置のようす</div>
+            <svg viewBox="0 0 420 200" width="100%" style="max-width:480px;">
+              <!-- スタンド -->
+              <rect x="40" y="20" width="6" height="160" fill="#999"/>
+              <rect x="20" y="178" width="60" height="6" fill="#999"/>
+              <!-- 枝つきフラスコ -->
+              <path d="M120 60 L120 95 Q120 130 145 130 L185 130 Q210 130 210 95 L210 60 Z" fill="#eaf4ff" stroke="#5a8fc0" stroke-width="1.5"/>
+              <rect x="155" y="35" width="20" height="28" fill="#eaf4ff" stroke="#5a8fc0" stroke-width="1.5"/>
+              <ellipse cx="165" cy="105" rx="38" ry="18" fill="#cfe6ff" opacity="0.7"/>
+              <text x="165" y="118" font-size="8" text-anchor="middle" fill="#2563a8">水＋エタノール</text>
+              <!-- 温度計 -->
+              <line x1="165" y1="35" x2="165" y2="100" stroke="#e03030" stroke-width="2"/>
+              <circle cx="165" cy="100" r="3" fill="#e03030"/>
+              <text x="178" y="40" font-size="8" fill="#e03030">温度計</text>
+              <!-- 枝管→ガラス管 -->
+              <path d="M210 80 L260 80" stroke="#5a8fc0" stroke-width="3" fill="none"/>
+              <path d="M260 80 L260 100" stroke="#5a8fc0" stroke-width="3" fill="none"/>
+              <!-- 受けの試験管（水で冷やす） -->
+              <rect x="230" y="130" width="80" height="45" rx="4" fill="#dceeff" stroke="#5a8fc0" stroke-width="1.5"/>
+              <text x="270" y="142" font-size="7.5" text-anchor="middle" fill="#2563a8">水で冷やす</text>
+              <rect x="262" y="100" width="14" height="60" fill="#fff" stroke="#888" stroke-width="1.5"/>
+              <ellipse cx="269" cy="158" rx="7" ry="5" fill="#cfe6ff"/>
+              <text x="269" y="190" font-size="8" text-anchor="middle" fill="#333">試験管に集める</text>
+              <!-- ガスバーナー -->
+              <rect x="135" y="160" width="60" height="10" fill="#aaa" stroke="#888" stroke-width="1"/>
+              <path d="M150 160 Q155 150 160 160" fill="#ffa040" opacity="0.9"/>
+              <path d="M165 160 Q170 148 175 160" fill="#ff6020" opacity="0.9"/>
+              <text x="165" y="195" font-size="8" text-anchor="middle" fill="#333">弱火で加熱</text>
+            </svg>
+          </div>
+
           <div class="proc-box">
             <strong>ステップ① 混合物を熱して出てきた液体を集める</strong><br>
             枝つきフラスコを組み立て、エタノール3cm³と水17cm³の混合物を弱火で熱する。出てきた液体を約2cm³ずつ3本の試験管に集め、加熱している間、熱した時間と温度を記録する。<br><br>
@@ -1441,78 +2334,109 @@
               <tr><td class="lbl">3本目</td><td><textarea class="sm" placeholder="　分〜　分"></textarea></td><td><textarea class="sm" placeholder="約　℃"></textarea></td><td><textarea class="sm" placeholder=""></textarea></td><td><textarea class="sm" placeholder="燃えた・燃えなかった"></textarea></td></tr>
             </tbody>
           </table></div>
-          <div class="field-label">実験結果②：温度変化のグラフ（記録した値をプロットして曲線を引こう）</div>
-          <!-- グラフ用紙 SVG -->
-          <svg viewBox="0 0 400 200" width="100%" style="background:#fff;border:1px solid #ccc;border-radius:8px;margin:8px 0;">
-            <line x1="50" y1="15" x2="50" y2="170" stroke="#aaa" stroke-width="1.5"/>
-            <line x1="50" y1="170" x2="385" y2="170" stroke="#aaa" stroke-width="1.5"/>
+          <div class="field-label">実験結果②：温度変化のグラフ</div>
+          <div class="proc-box" style="background:#fff8ec; border-color:#c0a830; margin-bottom:10px;">
+            <strong>📌 なぜグラフにする？</strong><br>
+            実験結果①の表の数字だけでは、温度がいつ・どのくらいの間「変化しなくなる」のかが読み取りにくい。グラフにして点をつなぐと、線が平らになっている区間（＝温度が一定の区間）がひと目でわかり、それが沸点を見つける手がかりになる。
+          </div>
+          <div style="font-size:13px; color:#5a5852; margin-bottom:8px;">グラフの中をクリックすると点が打てます。記録した「時間・温度」の組み合わせの場所をクリックして点を置いていこう。点を打つと自動的に線でつながります。</div>
+          <!-- グラフ用紙 SVG（クリックでプロット） -->
+          <svg class="graph-plot" data-graph="g1" viewBox="0 0 400 200" width="100%" style="background:#fff;border:1px solid #ccc;border-radius:8px;margin:8px 0;cursor:crosshair;" onclick="addGraphPoint(event,'g1')">
+            <line x1="50" y1="15" x2="50" y2="170" stroke="#aaa" stroke-width="1.5" pointer-events="none"/>
+            <line x1="50" y1="170" x2="385" y2="170" stroke="#aaa" stroke-width="1.5" pointer-events="none"/>
             <!-- Y軸目盛り -->
-            <text x="44" y="174" font-size="8" text-anchor="end" fill="#888">0</text>
-            <text x="44" y="140" font-size="8" text-anchor="end" fill="#888">20</text>
-            <text x="44" y="110" font-size="8" text-anchor="end" fill="#888">40</text>
-            <text x="44" y="80" font-size="8" text-anchor="end" fill="#888">60</text>
-            <text x="44" y="50" font-size="8" text-anchor="end" fill="#888">80</text>
-            <text x="44" y="20" font-size="8" text-anchor="end" fill="#888">100</text>
+            <text x="44" y="174" font-size="8" text-anchor="end" fill="#888" pointer-events="none">0</text>
+            <text x="44" y="140" font-size="8" text-anchor="end" fill="#888" pointer-events="none">20</text>
+            <text x="44" y="110" font-size="8" text-anchor="end" fill="#888" pointer-events="none">40</text>
+            <text x="44" y="80" font-size="8" text-anchor="end" fill="#888" pointer-events="none">60</text>
+            <text x="44" y="50" font-size="8" text-anchor="end" fill="#888" pointer-events="none">80</text>
+            <text x="44" y="20" font-size="8" text-anchor="end" fill="#888" pointer-events="none">100</text>
             <!-- X軸目盛り -->
-            <text x="80" y="182" font-size="8" text-anchor="middle" fill="#888">2</text>
-            <text x="120" y="182" font-size="8" text-anchor="middle" fill="#888">4</text>
-            <text x="160" y="182" font-size="8" text-anchor="middle" fill="#888">6</text>
-            <text x="200" y="182" font-size="8" text-anchor="middle" fill="#888">8</text>
-            <text x="240" y="182" font-size="8" text-anchor="middle" fill="#888">10</text>
-            <text x="280" y="182" font-size="8" text-anchor="middle" fill="#888">12</text>
-            <text x="320" y="182" font-size="8" text-anchor="middle" fill="#888">14</text>
-            <text x="360" y="182" font-size="8" text-anchor="middle" fill="#888">16</text>
+            <text x="80" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">2</text>
+            <text x="120" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">4</text>
+            <text x="160" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">6</text>
+            <text x="200" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">8</text>
+            <text x="240" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">10</text>
+            <text x="280" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">12</text>
+            <text x="320" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">14</text>
+            <text x="360" y="182" font-size="8" text-anchor="middle" fill="#888" pointer-events="none">16</text>
             <!-- グリッド -->
-            <line x1="80" y1="15" x2="80" y2="170" stroke="#eee" stroke-width="1"/>
-            <line x1="120" y1="15" x2="120" y2="170" stroke="#eee" stroke-width="1"/>
-            <line x1="160" y1="15" x2="160" y2="170" stroke="#eee" stroke-width="1"/>
-            <line x1="200" y1="15" x2="200" y2="170" stroke="#eee" stroke-width="1"/>
-            <line x1="240" y1="15" x2="240" y2="170" stroke="#eee" stroke-width="1"/>
-            <line x1="280" y1="15" x2="280" y2="170" stroke="#eee" stroke-width="1"/>
-            <line x1="320" y1="15" x2="320" y2="170" stroke="#eee" stroke-width="1"/>
-            <line x1="360" y1="15" x2="360" y2="170" stroke="#eee" stroke-width="1"/>
-            <line x1="50" y1="140" x2="385" y2="140" stroke="#eee" stroke-width="1"/>
-            <line x1="50" y1="110" x2="385" y2="110" stroke="#eee" stroke-width="1"/>
-            <line x1="50" y1="80" x2="385" y2="80" stroke="#eee" stroke-width="1"/>
-            <line x1="50" y1="50" x2="385" y2="50" stroke="#eee" stroke-width="1"/>
-            <line x1="50" y1="20" x2="385" y2="20" stroke="#eee" stroke-width="1"/>
+            <line x1="80" y1="15" x2="80" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="120" y1="15" x2="120" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="160" y1="15" x2="160" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="200" y1="15" x2="200" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="240" y1="15" x2="240" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="280" y1="15" x2="280" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="320" y1="15" x2="320" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="360" y1="15" x2="360" y2="170" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="50" y1="140" x2="385" y2="140" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="50" y1="110" x2="385" y2="110" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="50" y1="80" x2="385" y2="80" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="50" y1="50" x2="385" y2="50" stroke="#eee" stroke-width="1" pointer-events="none"/>
+            <line x1="50" y1="20" x2="385" y2="20" stroke="#eee" stroke-width="1" pointer-events="none"/>
             <!-- 軸ラベル -->
-            <text x="20" y="95" font-size="9" text-anchor="middle" fill="#555" transform="rotate(-90,20,95)">温度(℃)</text>
-            <text x="217" y="196" font-size="9" text-anchor="middle" fill="#555">加熱した時間（分）</text>
+            <text x="20" y="95" font-size="9" text-anchor="middle" fill="#555" transform="rotate(-90,20,95)" pointer-events="none">温度(℃)</text>
+            <text x="217" y="196" font-size="9" text-anchor="middle" fill="#555" pointer-events="none">加熱した時間（分）</text>
             <!-- エタノールの沸点ライン -->
-            <line x1="50" y1="80" x2="385" y2="80" stroke="#7b3fa0" stroke-width="1" stroke-dasharray="5,3" opacity="0.5"/>
-            <text x="387" y="83" font-size="8" fill="#7b3fa0">78℃</text>
+            <line x1="50" y1="80" x2="385" y2="80" stroke="#7b3fa0" stroke-width="1" stroke-dasharray="5,3" opacity="0.5" pointer-events="none"/>
+            <text x="387" y="83" font-size="8" fill="#7b3fa0" pointer-events="none">78℃</text>
             <!-- 水の沸点ライン -->
-            <line x1="50" y1="20" x2="385" y2="20" stroke="#e03030" stroke-width="1" stroke-dasharray="5,3" opacity="0.5"/>
-            <text x="387" y="23" font-size="8" fill="#e03030">100℃</text>
+            <line x1="50" y1="20" x2="385" y2="20" stroke="#e03030" stroke-width="1" stroke-dasharray="5,3" opacity="0.5" pointer-events="none"/>
+            <text x="387" y="23" font-size="8" fill="#e03030" pointer-events="none">100℃</text>
+            <!-- 生徒がプロットした点と線 -->
+            <polyline id="graph-line-g1" fill="none" stroke="#2563a8" stroke-width="2" points="" pointer-events="none"/>
+            <g id="graph-points-g1"></g>
           </svg>
-        </div>
-
-        <div class="card">
-          <div class="card-head"><span class="badge b-blue">ポイント整理</span><span class="card-title">蒸留（p.128）</span></div>
-          <div class="highlight hl-sta">
-            混合物を加熱したとき、<span style="background:#e8d4f8;padding:0 6px;border-radius:4px;">　　　</span>の低いエタノールを多くふくんだ気体が先に出てくる。液体を熱して沸騰させ、出てくる蒸気（気体）を冷やして再び液体としてとり出す操作を<strong>蒸留</strong>という。
+          <div style="display:flex; gap:6px;">
+            <button type="button" onclick="undoGraphPoint('g1')" style="font-size:12px; padding:5px 12px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">↩️ 戻す</button>
+            <button type="button" onclick="clearGraphPoints('g1')" style="font-size:12px; padding:5px 12px; border:1px solid #ccc; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit;">🗑️ クリア</button>
           </div>
-          <div class="grid2">
-            <div>
-              <div class="field-label">蒸留の利用例</div>
-              <textarea placeholder="・日本酒や焼酎をつくるとき（醸造と蒸留）&#10;・石油の分留（原油を精製塔で分離）&#10;・ウイスキーなど濃度の高い酒をつくるとき&#10;など"></textarea>
-            </div>
-            <div>
-              <div class="field-label">石油の分留（p.128）</div>
-              <textarea placeholder="原油を精製塔に通すと、沸点のちがいを利用して…&#10;・石油ガス（沸点が低い）&#10;・ガソリン・ナフサ&#10;・灯油・重油（沸点が高い）&#10;などに分けられる。"></textarea>
-            </div>
-          </div>
+          <input type="hidden" id="graph-g1-data" value="">
         </div>
 
         <div class="card">
           <div class="card-head"><span class="badge b-coral">考察</span><span class="card-title">（p.127〜128）</span></div>
           <div class="field-label">① 3本の試験管に集めた液体には、それぞれ何が多くふくまれているか。実験結果と沸点の表から考えよう。</div>
-          <textarea placeholder="1本目→エタノールが多い（理由：温度が低く、エタノールの沸点78℃に近いため…）&#10;3本目→水が多い（理由：）"></textarea>
+          <textarea placeholder=""></textarea>
           <div class="field-label">② 作成したグラフからわかることは何か。126ページの水の温度変化グラフと比較しよう。</div>
           <textarea placeholder="水の場合と比べると…混合物では沸点が（一定になる・ならない）。なぜなら…"></textarea>
-          <div class="field-label">③ 126ページの「？」への自分の考えをまとめよう。（液体どうしの混合物の分け方）</div>
-          <textarea placeholder="使うキーワード：沸点・純粋な物質・混合物&#10;水とエタノールの沸点のちがいを利用すると…蒸留という操作で…"></textarea>
+          <div class="field-label">③ 液体どうしの混合物を分けるには、どのようにすればよいだろうか。自分の考えをまとめよう。</div>
+          <textarea placeholder="使うキーワード：沸点・純粋な物質・混合物"></textarea>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="badge b-blue">ポイント整理</span><span class="card-title">蒸留（p.128）</span></div>
+          <div class="highlight hl-sta">
+            混合物を加熱したとき、
+            <select class="quiz-select" data-answer="沸点" onchange="checkQuiz(this)">
+              <option value="">選んでね</option>
+              <option value="沸点">沸点</option>
+              <option value="融点">融点</option>
+              <option value="質量">質量</option>
+            </select>
+            <span class="quiz-result"></span>
+            の低いエタノールを多くふくんだ気体が先に出てくる。液体を熱して沸騰させ、出てくる蒸気（気体）を冷やして再び液体としてとり出す操作を<strong>蒸留</strong>という。
+          </div>
+          <div class="grid2">
+            <div>
+              <div class="field-label">蒸留の利用例</div>
+              <div class="proc-box" style="font-size:15px;">
+                ・日本酒や焼酎をつくるとき（醸造と蒸留）<br>
+                ・ウイスキーなど濃度の高い酒をつくるとき<br>
+                ・海水から真水をつくるとき
+              </div>
+            </div>
+            <div>
+              <div class="field-label">石油の分留（p.128）</div>
+              <div class="proc-box" style="font-size:15px;">
+                原油を精製塔に通すと、沸点のちがいを利用して、沸点が低いものから順に<br>
+                石油ガス → ガソリン・ナフサ → 灯油・重油<br>
+                に分けられる。
+              </div>
+            </div>
+          </div>
+          <div class="field-label" style="margin-top:8px;">知っていた利用例はあった？気づいたことを書こう</div>
+          <textarea class="sm" placeholder="自分の考えを書いてみよう"></textarea>
         </div>
 
         <div class="card">
@@ -1529,13 +2453,28 @@
       </div>
     </div>
 
+    <!-- 章のおわり：まとめ -->
+    <div class="notebook" id="nb-sta-matome">
+      <div class="nb-inner">
+        <div class="card" style="border:2px solid #7b3fa0; background:#f3eafc;">
+          <div class="card-head"><span class="badge b-purple">第4章の課題</span></div>
+          <div class="highlight hl-sta task-highlight">冬に池の氷の下で、魚はなぜ生きていられるのか？</div>
+          <div style="font-size:13px; color:#7b3fa0; margin-top:-6px; margin-bottom:14px;">水の特別な性質と、状態変化を結びつけて考えよう。</div>
+          <div class="field-label">学習後のまとめ</div>
+          <div class="field-q">単元1〜3で学んだこと（状態変化・体積と質量・沸点と融点など）をふまえて、この章の課題にあらためて答えよう。章のはじめに書いた予想と、何が変わったかも書いてみよう。</div>
+          <textarea id="sta-matome-text" placeholder="自分の考えを書いてみよう"></textarea>
+        </div>
+        <button class="save-btn save-btn-sta" onclick="saveData('sta-matome')">💾 このノートを保存する</button>
+      </div>
+    </div>
+
   </div><!-- /notebook-area sta -->
 </div><!-- /panel-sta -->
 
 <div id="toast">✅ 保存しました</div>
 
 <script>
-const chapterUnits = { gas: ['u1','u2'], sol: ['u3','u4'], sta: ['u5','u6','u7'] };
+const chapterUnits = { gas: ['gas-yoso','u1','u2','gas-matome'], sol: ['sol-yoso','u3','u4','sol-matome'], sta: ['sta-yoso','u5','u6','u7','sta-matome'] };
 let currentChapter = 'gas';
 
 function switchChapter(ch) {
@@ -1555,13 +2494,198 @@ function switchUnit(ch, unit) {
   // 単元カードのアクティブ切り替え
   chapterUnits[ch].forEach(u => {
     const btn = document.getElementById('utab-' + u);
-    if (btn) btn.className = 'unit-card' + (u === unit ? ' active-' + ch : '');
+    if (!btn) return;
+    const edge = btn.classList.contains('unit-card-edge') ? ' unit-card-edge' : '';
+    btn.className = 'unit-card' + edge + (u === unit ? ' active-' + ch : '');
   });
   // ノート表示切り替え
   chapterUnits[ch].forEach(u => {
     const nb = document.getElementById('nb-' + u);
     if (nb) nb.classList.toggle('active', u === unit);
   });
+}
+
+// ===== グラフ：クリックでプロット =====
+const graphHistory = { g0: [], g1: [] };
+
+function renderGraphPoints(graphId) {
+  const g = document.getElementById('graph-points-' + graphId);
+  const line = document.getElementById('graph-line-' + graphId);
+  if (!g || !line) return;
+  g.innerHTML = '';
+  const sorted = [...graphHistory[graphId]].sort((a, b) => a.x - b.x);
+  sorted.forEach(p => {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', p.x);
+    circle.setAttribute('cy', p.y);
+    circle.setAttribute('r', 4);
+    circle.setAttribute('fill', '#e03030');
+    circle.setAttribute('stroke', '#fff');
+    circle.setAttribute('stroke-width', '1');
+    circle.setAttribute('pointer-events', 'none');
+    g.appendChild(circle);
+  });
+  line.setAttribute('points', sorted.map(p => p.x + ',' + p.y).join(' '));
+  syncGraphData(graphId);
+}
+
+function addGraphPoint(evt, graphId) {
+  const svg = evt.currentTarget;
+  const pt = svg.createSVGPoint();
+  pt.x = evt.clientX;
+  pt.y = evt.clientY;
+  const ctm = svg.getScreenCTM().inverse();
+  const loc = pt.matrixTransform(ctm);
+  const x = Math.max(50, Math.min(385, loc.x));
+  const y = Math.max(15, Math.min(170, loc.y));
+  graphHistory[graphId].push({ x, y });
+  renderGraphPoints(graphId);
+  triggerAutoSaveForCurrentUnit();
+}
+
+function undoGraphPoint(graphId) {
+  graphHistory[graphId].pop();
+  renderGraphPoints(graphId);
+  triggerAutoSaveForCurrentUnit();
+}
+
+function clearGraphPoints(graphId) {
+  graphHistory[graphId] = [];
+  renderGraphPoints(graphId);
+  triggerAutoSaveForCurrentUnit();
+}
+
+function syncGraphData(graphId) {
+  const input = document.getElementById('graph-' + graphId + '-data');
+  if (input) input.value = JSON.stringify(graphHistory[graphId]);
+}
+
+function restoreGraphFromData() {
+  Object.keys(graphHistory).forEach(graphId => {
+    const input = document.getElementById('graph-' + graphId + '-data');
+    if (input && input.value) {
+      try {
+        graphHistory[graphId] = JSON.parse(input.value);
+      } catch(e) {
+        graphHistory[graphId] = [];
+      }
+      renderGraphPoints(graphId);
+    }
+  });
+}
+
+// ===== 粒子モデル：クリックで配置 =====
+const particleColors = ['#f0b840','#e8a830','#f5c060'];
+const particleHistory = { p1: [], p2: [], p3: [], p4: [], p5: [], p6: [], p7: [] };
+
+function renderParticles(beakerId) {
+  const g = document.getElementById('particles-' + beakerId);
+  if (!g) return;
+  g.innerHTML = '';
+  particleHistory[beakerId].forEach(p => {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', p.x);
+    circle.setAttribute('cy', p.y);
+    circle.setAttribute('r', 6);
+    circle.setAttribute('fill', '#f0b840');
+    circle.setAttribute('stroke', '#c07820');
+    circle.setAttribute('stroke-width', '1');
+    circle.setAttribute('pointer-events', 'none');
+    g.appendChild(circle);
+  });
+  syncParticleData(beakerId);
+}
+
+function addParticle(evt, beakerId) {
+  const svg = evt.currentTarget;
+  const pt = svg.createSVGPoint();
+  pt.x = evt.clientX;
+  pt.y = evt.clientY;
+  const ctm = svg.getScreenCTM().inverse();
+  const loc = pt.matrixTransform(ctm);
+  // SVGのviewBoxの範囲内に収める（少し余白をもたせる）
+  const vb = svg.viewBox.baseVal;
+  const margin = 10;
+  const x = Math.max(vb.x + margin, Math.min(vb.x + vb.width - margin, loc.x));
+  const y = Math.max(vb.y + margin, Math.min(vb.y + vb.height - margin, loc.y));
+  particleHistory[beakerId].push({ x, y });
+  renderParticles(beakerId);
+  triggerAutoSaveForCurrentUnit();
+}
+
+function undoParticle(beakerId) {
+  particleHistory[beakerId].pop();
+  renderParticles(beakerId);
+  triggerAutoSaveForCurrentUnit();
+}
+
+function clearParticles(beakerId) {
+  particleHistory[beakerId] = [];
+  renderParticles(beakerId);
+  triggerAutoSaveForCurrentUnit();
+}
+
+function syncParticleData(beakerId) {
+  const input = document.getElementById('particles-' + beakerId + '-data');
+  if (input) input.value = JSON.stringify(particleHistory[beakerId]);
+}
+
+function restoreParticlesFromData() {
+  ['p1','p2','p3','p4','p5','p6','p7'].forEach(beakerId => {
+    const input = document.getElementById('particles-' + beakerId + '-data');
+    if (input && input.value) {
+      try {
+        particleHistory[beakerId] = JSON.parse(input.value);
+      } catch(e) {
+        particleHistory[beakerId] = [];
+      }
+      renderParticles(beakerId);
+    }
+  });
+}
+
+function triggerAutoSaveForCurrentUnit() {
+  // 現在表示中のノートを自動保存対象にする（粒子モデルはu3とu6で使用）
+  const activeNb = document.querySelector('.notebook.active');
+  if (!activeNb || !currentStudentName) return;
+  const unit = activeNb.id.replace('nb-', '');
+  clearTimeout(autoSaveTimers[unit]);
+  showAutoSaveIndicator('saving');
+  autoSaveTimers[unit] = setTimeout(() => { autoSaveUnit(unit); }, 1500);
+}
+
+// ===== 選択式クイズ：正誤判定 =====
+function toggleAnswer(id) {
+  const box = document.getElementById(id);
+  if (!box) return;
+  const btn = box.previousElementSibling;
+  const showing = box.style.display !== 'none';
+  box.style.display = showing ? 'none' : 'block';
+  if (btn && btn.classList.contains('answer-toggle-btn')) {
+    btn.textContent = showing ? '答えを見る' : '答えをかくす';
+  }
+}
+
+function checkQuiz(selectEl) {
+  const answer = selectEl.getAttribute('data-answer');
+  const value = selectEl.value;
+  const resultEl = selectEl.nextElementSibling;
+  if (!value) {
+    selectEl.classList.remove('correct', 'wrong');
+    if (resultEl && resultEl.classList.contains('quiz-result')) {
+      resultEl.textContent = '';
+      resultEl.classList.remove('correct', 'wrong');
+    }
+    return;
+  }
+  const isCorrect = value === answer;
+  selectEl.classList.toggle('correct', isCorrect);
+  selectEl.classList.toggle('wrong', !isCorrect);
+  if (resultEl && resultEl.classList.contains('quiz-result')) {
+    resultEl.textContent = isCorrect ? '◯ 正解！' : '✕ もう一度考えよう';
+    resultEl.classList.toggle('correct', isCorrect);
+    resultEl.classList.toggle('wrong', !isCorrect);
+  }
 }
 
 // ===== Firebase 連携 =====
@@ -1607,23 +2731,46 @@ async function selectStudent(name) {
   if (u3btn) u3btn.className = 'unit-card';
   const u4btn = document.getElementById('utab-u4');
   if (u4btn) u4btn.className = 'unit-card';
+  const solYosoBtn = document.getElementById('utab-sol-yoso');
+  if (solYosoBtn) solYosoBtn.className = 'unit-card unit-card-edge';
+  const solMatomeBtn = document.getElementById('utab-sol-matome');
+  if (solMatomeBtn) solMatomeBtn.className = 'unit-card unit-card-edge';
+  const staYosoBtn = document.getElementById('utab-sta-yoso');
+  if (staYosoBtn) staYosoBtn.className = 'unit-card unit-card-edge';
+  const staMatomeBtn = document.getElementById('utab-sta-matome');
+  if (staMatomeBtn) staMatomeBtn.className = 'unit-card unit-card-edge';
 }
 
 // Firebaseからデータ読み込み
+// 生徒を切り替える前に、画面上の入力欄をすべて空に戻す
+// （これをしないと、前の生徒が入力した内容が新しい生徒の画面に残ってしまい、
+//   そのまま保存すると別の生徒のデータを上書きしてしまうバグになる）
+function resetAllNotebookFields() {
+  // 前の生徒の保存待ちタイマーが残っていると、新しい生徒の画面に上書き保存されてしまうので止める
+  Object.keys(autoSaveTimers).forEach(k => clearTimeout(autoSaveTimers[k]));
+  document.querySelectorAll('.notebook input, .notebook textarea').forEach(el => { el.value = ''; });
+  document.querySelectorAll('.notebook select').forEach(el => { el.value = ''; el.classList.remove('correct', 'wrong'); });
+  document.querySelectorAll('.notebook .quiz-result').forEach(el => { el.textContent = ''; el.classList.remove('correct', 'wrong'); });
+  ['p1','p2','p3','p4','p5','p6','p7'].forEach(b => { particleHistory[b] = []; renderParticles(b); });
+  Object.keys(graphHistory).forEach(g => { graphHistory[g] = []; renderGraphPoints(g); });
+}
+
 async function loadAllFromFirebase(name) {
+  // まず画面をまっさらにしてから、この生徒のデータを読み込む
+  resetAllNotebookFields();
   try {
     const db = window._fbDb;
     const safeName = name.replace(/[.#$/\[\]]/g, '_');
     const snapshot = await window._fbGet(window._fbChild(window._fbRef(db), 'notebooks/' + safeName));
     if (!snapshot.exists()) return;
     const allData = snapshot.val();
-    ['u1','u2','u3','u4','u5','u6','u7'].forEach(unit => {
+    ['gas-yoso','u1','u2','gas-matome','sol-yoso','u3','u4','sol-matome','sta-yoso','u5','u6','u7','sta-matome'].forEach(unit => {
       const data = allData[unit];
       if (!data) return;
       const nb = document.getElementById('nb-' + unit);
       if (!nb) return;
       nb.querySelectorAll('input[id], textarea[id]').forEach(el => { if (data[el.id] !== undefined) el.value = data[el.id]; });
-      nb.querySelectorAll('textarea:not([id]), input:not([id])').forEach((el, i) => {
+      nb.querySelectorAll('textarea:not([id]), input:not([id]), select:not([id])').forEach((el, i) => {
         const k = '_' + unit + '_' + i;
         if (data[k] !== undefined) el.value = data[k];
       });
@@ -1631,6 +2778,11 @@ async function loadAllFromFirebase(name) {
     // drag & drop の復元
     try { loadSeiri(); } catch(e) {}
     try { loadSeiriU2(); } catch(e) {}
+    // クイズ選択式の正誤表示を復元
+    document.querySelectorAll('.quiz-select').forEach(sel => checkQuiz(sel));
+    // 粒子モデルの復元
+    try { restoreParticlesFromData(); } catch(e) {}
+    try { restoreGraphFromData(); } catch(e) {}
   } catch(e) {
     console.error('Firebase load error:', e);
   }
@@ -1642,7 +2794,7 @@ async function saveData(unit) {
   const nb = document.getElementById('nb-' + unit);
   const data = {};
   nb.querySelectorAll('input[id], textarea[id]').forEach(el => { data[el.id] = el.value; });
-  nb.querySelectorAll('textarea:not([id]), input:not([id])').forEach((el, i) => { data['_' + unit + '_' + i] = el.value; });
+  nb.querySelectorAll('textarea:not([id]), input:not([id]), select:not([id])').forEach((el, i) => { data['_' + unit + '_' + i] = el.value; });
   try {
     const db = window._fbDb;
     const safeName = currentStudentName.replace(/[.#$/\[\]]/g, '_');
@@ -1703,7 +2855,7 @@ const autoSaveTimers = {};
 
 function setupAutoSave() {
   // ユニットとその中のinput/textareaを監視
-  ['u1','u2','u3','u4','u5','u6','u7'].forEach(unit => {
+  ['gas-yoso','u1','u2','gas-matome','sol-yoso','u3','u4','sol-matome','sta-yoso','u5','u6','u7','sta-matome'].forEach(unit => {
     const nb = document.getElementById('nb-' + unit);
     if (!nb) return;
     nb.addEventListener('input', () => {
@@ -1725,7 +2877,7 @@ async function autoSaveUnit(unit) {
   if (!nb) return;
   const data = {};
   nb.querySelectorAll('input[id], textarea[id]').forEach(el => { data[el.id] = el.value; });
-  nb.querySelectorAll('textarea:not([id]), input:not([id])').forEach((el, i) => { data['_' + unit + '_' + i] = el.value; });
+  nb.querySelectorAll('textarea:not([id]), input:not([id]), select:not([id])').forEach((el, i) => { data['_' + unit + '_' + i] = el.value; });
   try {
     const db = window._fbDb;
     const safeName = currentStudentName.replace(/[.#$/\[\]]/g, '_');
@@ -1818,7 +2970,9 @@ function resetSeiriU2() {
     chip.classList.remove('used');
     chip.setAttribute('draggable', 'true');
   });
-  localStorage.removeItem('seiri_u2');
+  const input = document.getElementById('seiri-u2-data');
+  if (input) input.value = '';
+  triggerAutoSaveForCurrentUnit();
 }
 
 function checkSeiriU2() {
@@ -1848,11 +3002,23 @@ function saveSeiriU2() {
     const placed = cell.querySelector('.placed-word-u2');
     data[cell.dataset.key2] = placed ? placed.dataset.word : '';
   });
-  localStorage.setItem('seiri_u2', JSON.stringify(data));
+  const input = document.getElementById('seiri-u2-data');
+  if (input) input.value = JSON.stringify(data);
+  triggerAutoSaveForCurrentUnit();
 }
 
 function loadSeiriU2() {
-  const raw = localStorage.getItem('seiri_u2');
+  // まず表示をリセット（前の生徒のデータが残らないように）
+  document.querySelectorAll('.drop-area-u2').forEach(area => {
+    area.innerHTML = '<span class="drop-hint">ここにドロップ</span>';
+    area.classList.remove('filled', 'correct', 'incorrect');
+  });
+  document.querySelectorAll('.word-chip-u2').forEach(chip => {
+    chip.classList.remove('used');
+    chip.setAttribute('draggable', 'true');
+  });
+  const input = document.getElementById('seiri-u2-data');
+  const raw = input ? input.value : '';
   if (!raw) return;
   try {
     const data = JSON.parse(raw);
@@ -1882,7 +3048,6 @@ function loadSeiriU2() {
     });
   } catch(e) {}
 }
-loadSeiriU2();
 
 // ===== 語群ドラッグ＆ドロップ =====
 let draggingChip = null;
@@ -1942,7 +3107,9 @@ function resetSeiri() {
     chip.classList.remove('used');
     chip.setAttribute('draggable', 'true');
   });
-  localStorage.removeItem('seiri_u1');
+  const input = document.getElementById('seiri-u1-data');
+  if (input) input.value = '';
+  triggerAutoSaveForCurrentUnit();
 }
 
 function saveSeiri() {
@@ -1951,7 +3118,9 @@ function saveSeiri() {
     const placed = cell.querySelector('.placed-word');
     data[cell.dataset.key] = placed ? placed.dataset.word : '';
   });
-  localStorage.setItem('seiri_u1', JSON.stringify(data));
+  const input = document.getElementById('seiri-u1-data');
+  if (input) input.value = JSON.stringify(data);
+  triggerAutoSaveForCurrentUnit();
 }
 
 // 正解データ
@@ -1993,7 +3162,17 @@ function checkSeiri() {
 }
 
 function loadSeiri() {
-  const raw = localStorage.getItem('seiri_u1');
+  // まず表示をリセット（前の生徒のデータが残らないように）
+  document.querySelectorAll('.drop-area').forEach(area => {
+    area.innerHTML = '<span class="drop-hint">ここにドロップ</span>';
+    area.classList.remove('filled', 'correct', 'incorrect');
+  });
+  document.querySelectorAll('.word-chip').forEach(chip => {
+    chip.classList.remove('used');
+    chip.setAttribute('draggable', 'true');
+  });
+  const input = document.getElementById('seiri-u1-data');
+  const raw = input ? input.value : '';
   if (!raw) return;
   try {
     const data = JSON.parse(raw);
@@ -2024,7 +3203,6 @@ function loadSeiri() {
     });
   } catch(e) {}
 }
-loadSeiri();
 
 
 // ===== 先生モード =====
@@ -2032,6 +3210,9 @@ const TEACHER_PASSWORD = 'sensei2025';
 
 // 各単元の項目定義
 const unitItems = {
+  'gas-yoso': [
+    { key: 'gas-yoso-text', label: '第2章の予想（章のはじめ）' },
+  ],
   u1: [
     { key: 'u1-yoso', label: '予想' },
     { key: '_u1_0', label: '実験結果①（色・においなど）' },
@@ -2049,21 +3230,53 @@ const unitItems = {
     { key: '_u2_3', label: '密度と集め方の関係' },
     { key: 'u2-matome', label: 'まとめ' },
   ],
+  'gas-matome': [
+    { key: 'gas-matome-text', label: '第2章のまとめ（章のおわり）' },
+  ],
+  'sol-yoso': [
+    { key: 'sol-yoso-text', label: '第3章の予想（章のはじめ）' },
+  ],
   u3: [
-    { key: 'u3-yoso', label: '予想' },
-    { key: '_u3_0', label: '実験結果①（水に入れたようす）' },
-    { key: '_u3_1', label: '実験結果②（質量の変化）' },
-    { key: '_u3_2', label: '実験結果③（ろ過後）' },
-    { key: '_u3_3', label: '実験結果④（一晩置いた後）' },
-    { key: '_u3_4', label: '溶質の意味' },
-    { key: '_u3_5', label: '溶媒の意味' },
-    { key: '_u3_6', label: '水溶液の意味' },
-    { key: '_u3_7', label: '練習①（濃度計算）' },
-    { key: '_u3_8', label: '練習②（食塩と水の量）' },
-    { key: '_u3_9', label: '考察①' },
-    { key: '_u3_10', label: '考察②' },
-    { key: '_u3_11', label: '考察③' },
-    { key: '_u3_12', label: '考察④（班での話し合い）' },
+    { key: 'u3-yoso-1a', label: '予想①（コーヒーシュガーを水に入れたようす）' },
+    { key: 'u3-yoso-1b', label: '予想①（デンプンを水に入れたようす）' },
+    { key: 'u3-yoso-2', label: '予想②（質量の変化）' },
+    { key: 'u3-yoso-3', label: '予想③（ろ過後）' },
+    { key: 'u3-yoso-4', label: '予想④（一晩置いた後）' },
+    { key: '_u3_0', label: '実験結果①コーヒーシュガー（水に入れたようす）' },
+    { key: '_u3_1', label: '実験結果①デンプン（水に入れたようす）' },
+    { key: '_u3_2', label: '実験結果②コーヒーシュガー（質量の変化）' },
+    { key: '_u3_3', label: '実験結果②デンプン（質量の変化）' },
+    { key: '_u3_4', label: '実験結果③コーヒーシュガー（ろ過後）' },
+    { key: '_u3_5', label: '実験結果③デンプン（ろ過後）' },
+    { key: '_u3_6', label: '実験結果④コーヒーシュガー（一晩置いた後）' },
+    { key: '_u3_7', label: '実験結果④デンプン（一晩置いた後）' },
+    { key: '_u3_8', label: '考察①' },
+    { key: '_u3_9', label: '考察②' },
+    { key: '_u3_10', label: '考察③' },
+    { key: '_u3_11', label: '考察④（班での話し合い）' },
+    { key: '_u3_12', label: '選択クイズ①（液の色）' },
+    { key: '_u3_13', label: '選択クイズ②（液のこさ）' },
+    { key: '_u3_14', label: '選択クイズ③（時間経過）' },
+    { key: 'particles-p1-data', label: '粒子モデル①（水に入れた直後）' },
+    { key: 'particles-p2-data', label: '粒子モデル②（広がっていく途中）' },
+    { key: 'particles-p3-data', label: '粒子モデル③（均一になった状態）' },
+    { key: '_u3_15', label: '粒子モデルの理由説明' },
+    { key: '_u3_16', label: '選択クイズ④（溶質）' },
+    { key: '_u3_17', label: '選択クイズ⑤（溶媒）' },
+    { key: '_u3_18', label: '選択クイズ⑥（溶液）' },
+    { key: '_u3_19', label: '選択クイズ⑦（水溶液）' },
+    { key: '_u3_20', label: '濃度の導入：どちらが濃いか予想' },
+    { key: '_u3_21', label: '濃度の導入：身のまわりの例' },
+    { key: '_u3_22', label: '練習①（濃度計算）' },
+    { key: '_u3_23', label: '練習②（食塩と水の量）' },
+    { key: '_u3_24', label: '分類クイズ①（水）' },
+    { key: '_u3_25', label: '分類クイズ②（酸素）' },
+    { key: '_u3_26', label: '分類クイズ③（砂糖水）' },
+    { key: '_u3_27', label: '分類クイズ④（炭酸飲料）' },
+    { key: '_u3_28', label: '純粋な物質：どんな物質か' },
+    { key: '_u3_29', label: '混合物：どんな物質か' },
+    { key: '_u3_30', label: '純粋な物質：他の身近な例' },
+    { key: '_u3_31', label: '混合物：他の身近な例' },
     { key: 'u3-matome', label: 'まとめ' },
   ],
   u4: [
@@ -2080,6 +3293,12 @@ const unitItems = {
     { key: '_u4_9', label: '考察③（班での話し合い）' },
     { key: 'u4-matome', label: 'まとめ' },
   ],
+  'sol-matome': [
+    { key: 'sol-matome-text', label: '第3章のまとめ（章のおわり）' },
+  ],
+  'sta-yoso': [
+    { key: 'sta-yoso-text', label: '第4章の予想（章のはじめ）' },
+  ],
   u5: [
     { key: 'u5-yoso', label: '予想' },
     { key: '_u5_0', label: '融解の説明' },
@@ -2093,27 +3312,49 @@ const unitItems = {
   ],
   u6: [
     { key: 'u6-yoso', label: '予想' },
-    { key: '_u6_0', label: '実験結果（質量・液体）' },
-    { key: '_u6_1', label: '実験結果（質量・固体）' },
-    { key: '_u6_2', label: '実験結果（体積・スケッチ）' },
-    { key: '_u6_3', label: '水の特別な性質まとめ' },
-    { key: '_u6_4', label: '考察①' },
-    { key: '_u6_5', label: '考察②' },
+    { key: '_u6_0', label: '実験結果（質量・液体ロウ）' },
+    { key: '_u6_1', label: '実験結果（質量・固体ロウ）' },
+    { key: '_u6_2', label: '実験結果（体積・液体ロウ）' },
+    { key: '_u6_3', label: '実験結果（体積・固体ロウ）' },
+    { key: '_u6_4', label: '実験結果（スケッチ）' },
+    { key: '_u6_5', label: '考察①' },
+    { key: '_u6_6', label: '考察②' },
+    { key: '_u6_7', label: '調べよう：エタノールの観察' },
+    { key: 'particles-p4-data', label: '粒子モデル①（ロウ：固体のとき）' },
+    { key: 'particles-p5-data', label: '粒子モデル①（ロウ：液体のとき）' },
+    { key: 'particles-p6-data', label: '粒子モデル②（エタノール：液体のとき）' },
+    { key: 'particles-p7-data', label: '粒子モデル②（エタノール：気体のとき）' },
+    { key: '_u6_12', label: '①のように考えた理由（ロウ）' },
+    { key: '_u6_13', label: '②のように考えた理由（エタノール）' },
+    { key: '_u6_14', label: '水の特別な性質まとめ' },
     { key: 'u6-matome', label: 'まとめ' },
   ],
   u7: [
     { key: 'u7-yoso', label: '予想' },
-    { key: '_u7_0', label: 'グラフの読み取り①' },
-    { key: '_u7_1', label: 'グラフの読み取り②' },
-    { key: '_u7_2', label: '実験結果①（1本目）' },
-    { key: '_u7_3', label: '実験結果②（2本目）' },
-    { key: '_u7_4', label: '実験結果③（3本目）' },
-    { key: '_u7_5', label: '蒸留の利用例' },
-    { key: '_u7_6', label: '石油の分留' },
-    { key: '_u7_7', label: '考察①' },
-    { key: '_u7_8', label: '考察②' },
-    { key: '_u7_9', label: '考察③' },
+    { key: '_u7_10', label: 'グラフの読み取り' },
+    { key: 'graph-g0-data', label: '予想：混合物のグラフ（プロット）' },
+    { key: '_u7_11', label: '予想：混合物のグラフはどうなる？（理由）' },
+    { key: '_u7_12', label: '実験結果①（1本目・時間）' },
+    { key: '_u7_13', label: '実験結果①（1本目・温度）' },
+    { key: '_u7_14', label: '実験結果①（1本目・色）' },
+    { key: '_u7_15', label: '実験結果①（1本目・燃焼）' },
+    { key: '_u7_16', label: '実験結果②（2本目・時間）' },
+    { key: '_u7_17', label: '実験結果②（2本目・温度）' },
+    { key: '_u7_18', label: '実験結果②（2本目・色）' },
+    { key: '_u7_19', label: '実験結果②（2本目・燃焼）' },
+    { key: '_u7_20', label: '実験結果③（3本目・時間）' },
+    { key: '_u7_21', label: '実験結果③（3本目・温度）' },
+    { key: '_u7_22', label: '実験結果③（3本目・色）' },
+    { key: '_u7_23', label: '実験結果③（3本目・燃焼）' },
+    { key: 'graph-g1-data', label: '温度変化のグラフ（プロット）' },
+    { key: '_u7_24', label: '考察①' },
+    { key: '_u7_25', label: '考察②' },
+    { key: '_u7_26', label: '考察③（まとめ）' },
+    { key: '_u7_28', label: '蒸留の利用例についての気づき' },
     { key: 'u7-matome', label: 'まとめ' },
+  ],
+  'sta-matome': [
+    { key: 'sta-matome-text', label: '第4章のまとめ（章のおわり）' },
   ],
 };
 
@@ -2144,6 +3385,26 @@ function updateItemSelect() {
   });
 }
 
+function formatTeacherValue(key, val) {
+  if (key.startsWith('particles-') && key.endsWith('-data')) {
+    try {
+      const arr = JSON.parse(val);
+      return `🔵 配置した粒子の数：${arr.length}個`;
+    } catch(e) {
+      return '（粒子データなし）';
+    }
+  }
+  if (key.startsWith('graph-') && key.endsWith('-data')) {
+    try {
+      const arr = JSON.parse(val);
+      return `📈 プロットした点の数：${arr.length}個`;
+    } catch(e) {
+      return '（グラフデータなし）';
+    }
+  }
+  return val;
+}
+
 async function loadTeacherView() {
   const unit = document.getElementById('teacher-unit-select').value;
   const itemKey = document.getElementById('teacher-item-select').value;
@@ -2159,6 +3420,13 @@ async function loadTeacherView() {
       return;
     }
     const all = snapshot.val();
+
+    // グラフデータ（クリックでプロットした点）は、クラス全員分を1つの図に重ねて表示する
+    if (itemKey.startsWith('graph-') && itemKey.endsWith('-data')) {
+      renderClassGraphOverlay(all, unit, itemKey, itemLabel, resultsEl);
+      return;
+    }
+
     resultsEl.innerHTML = `<div style="grid-column:1/-1; font-size:16px; font-weight:700; color:#1a1917; margin-bottom:4px;">📌 ${itemLabel}</div>`;
     let count = 0;
     Object.entries(all).forEach(([safeName, units]) => {
@@ -2171,7 +3439,7 @@ async function loadTeacherView() {
       card.style.cssText = 'background:#fff; border:1px solid #e2e0d8; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:8px;';
       card.innerHTML = `
         <div style="font-size:13px; font-weight:700; color:#2563a8; background:#eaf1fa; padding:4px 12px; border-radius:99px; display:inline-block; width:fit-content;">${safeName.replace(/_/g,' ')}</div>
-        <div style="font-size:15px; color:#1a1917; line-height:1.75; white-space:pre-wrap;">${val || '（未記入）'}</div>
+        <div style="font-size:15px; color:#1a1917; line-height:1.75; white-space:pre-wrap;">${formatTeacherValue(itemKey, val) || '（未記入）'}</div>
       `;
       resultsEl.appendChild(card);
     });
@@ -2181,6 +3449,63 @@ async function loadTeacherView() {
   } catch(e) {
     resultsEl.innerHTML = '<div style="color:#cc3300;grid-column:1/-1;">読み込みエラー：' + e.message + '</div>';
   }
+}
+
+// クラス全員のグラフ予想を1枚に重ねて表示（みんなの予想を見比べられるように）
+const classGraphColors = ['#e03030','#2563a8','#0f6e56','#c07820','#7b3fa0','#cc3399','#308040','#605030','#3060c0','#a04020','#207090','#906020'];
+
+function renderClassGraphOverlay(all, unit, itemKey, itemLabel, resultsEl) {
+  resultsEl.style.gridTemplateColumns = '1fr';
+  let entries = [];
+  Object.entries(all).forEach(([safeName, units]) => {
+    const unitData = units[unit];
+    if (!unitData) return;
+    const val = unitData[itemKey];
+    if (!val) return;
+    try {
+      const points = JSON.parse(val);
+      if (points && points.length > 0) entries.push({ name: safeName.replace(/_/g, ' '), points });
+    } catch(e) {}
+  });
+
+  if (entries.length === 0) {
+    resultsEl.innerHTML = '<div style="color:#908d84;font-size:14px;">まだグラフが書かれていません</div>';
+    return;
+  }
+
+  let svgLines = '';
+  let legend = '';
+  entries.forEach((entry, i) => {
+    const color = classGraphColors[i % classGraphColors.length];
+    const sorted = [...entry.points].sort((a, b) => a.x - b.x);
+    const pts = sorted.map(p => p.x + ',' + p.y).join(' ');
+    svgLines += `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" opacity="0.85"/>`;
+    legend += `<span style="display:inline-flex; align-items:center; gap:4px; margin-right:12px; font-size:12px; color:#333;"><span style="display:inline-block; width:14px; height:3px; background:${color};"></span>${entry.name}</span>`;
+  });
+
+  resultsEl.innerHTML = `
+    <div style="font-size:16px; font-weight:700; color:#1a1917; margin-bottom:4px;">📌 ${itemLabel}（クラス全員のグラフを重ねて表示・${entries.length}人分）</div>
+    <div style="background:#fff; border:1px solid #e2e0d8; border-radius:12px; padding:16px;">
+      <svg viewBox="0 0 400 200" width="100%" style="background:#fff;border:1px solid #ccc;border-radius:8px;">
+        <line x1="50" y1="15" x2="50" y2="170" stroke="#aaa" stroke-width="1.5"/>
+        <line x1="50" y1="170" x2="385" y2="170" stroke="#aaa" stroke-width="1.5"/>
+        <text x="44" y="174" font-size="8" text-anchor="end" fill="#888">0</text>
+        <text x="44" y="140" font-size="8" text-anchor="end" fill="#888">20</text>
+        <text x="44" y="110" font-size="8" text-anchor="end" fill="#888">40</text>
+        <text x="44" y="80" font-size="8" text-anchor="end" fill="#888">60</text>
+        <text x="44" y="50" font-size="8" text-anchor="end" fill="#888">80</text>
+        <text x="44" y="20" font-size="8" text-anchor="end" fill="#888">100</text>
+        <text x="20" y="95" font-size="9" text-anchor="middle" fill="#555" transform="rotate(-90,20,95)">温度(℃)</text>
+        <text x="217" y="196" font-size="9" text-anchor="middle" fill="#555">加熱した時間（分）</text>
+        <line x1="50" y1="80" x2="385" y2="80" stroke="#7b3fa0" stroke-width="1" stroke-dasharray="5,3" opacity="0.4"/>
+        <text x="387" y="83" font-size="8" fill="#7b3fa0">78℃</text>
+        <line x1="50" y1="20" x2="385" y2="20" stroke="#e03030" stroke-width="1" stroke-dasharray="5,3" opacity="0.4"/>
+        <text x="387" y="23" font-size="8" fill="#e03030">100℃</text>
+        ${svgLines}
+      </svg>
+      <div style="margin-top:10px; line-height:2;">${legend}</div>
+    </div>
+  `;
 }
 
 async function loadAllItems() {
@@ -2218,7 +3543,7 @@ async function loadAllItems() {
         card.style.cssText = 'background:#fff; border:1px solid #e2e0d8; border-radius:8px; padding:12px 14px;';
         card.innerHTML = `
           <div style="font-size:12px; font-weight:700; color:#2563a8; margin-bottom:6px;">${safeName.replace(/_/g,' ')}</div>
-          <div style="font-size:14px; color:#1a1917; line-height:1.75; white-space:pre-wrap;">${val}</div>
+          <div style="font-size:14px; color:#1a1917; line-height:1.75; white-space:pre-wrap;">${formatTeacherValue(item.key, val)}</div>
         `;
         grid.appendChild(card);
       });
@@ -2240,11 +3565,14 @@ function changeStudent() {
     currentStudentName = null;
     document.getElementById('current-student-name').textContent = '-';
     // フォームをリセット
-    ['u1','u2','u3','u4','u5','u6','u7'].forEach(unit => {
+    ['gas-yoso','u1','u2','gas-matome','sol-yoso','u3','u4','sol-matome','sta-yoso','u5','u6','u7','sta-matome'].forEach(unit => {
       const nb = document.getElementById('nb-' + unit);
       if (!nb) return;
       nb.querySelectorAll('input, textarea').forEach(el => el.value = '');
     });
+    // 粒子モデルもリセット
+    ['p1','p2','p3','p4','p5','p6','p7'].forEach(b => { particleHistory[b] = []; renderParticles(b); });
+    Object.keys(graphHistory).forEach(g => { graphHistory[g] = []; renderGraphPoints(g); });
     document.getElementById('modal-overlay').style.display = 'flex';
     loadStudentList();
   }
