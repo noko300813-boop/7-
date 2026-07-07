@@ -8,6 +8,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC3GRbZSxb7R-dbmvaSk_b3ALeOH24Afb4",
@@ -22,12 +23,15 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
+  const auth = getAuth(app);
   window._fbDb = db;
   window._fbRef = ref;
   window._fbSet = set;
   window._fbGet = get;
   window._fbChild = child;
   window._fbOnValue = onValue;
+  window._fbAuth = auth;
+  window._fbSignIn = signInWithEmailAndPassword;
 </script>
 <style>
   :root {
@@ -219,6 +223,26 @@
 </style>
 </head>
 <body>
+
+<!-- ===== 合言葉ゲート ===== -->
+<div id="passcode-overlay" style="
+  position:fixed; inset:0; background:rgba(0,0,0,0.65);
+  display:flex; align-items:center; justify-content:center;
+  z-index:10000; font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Meiryo',sans-serif;">
+  <div style="background:#fff; border-radius:16px; padding:36px 40px; max-width:420px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+    <div style="font-size:22px; font-weight:700; color:#1a1917; margin-bottom:6px;">🔒 合言葉を入力してください</div>
+    <div style="font-size:14px; color:#5a5852; margin-bottom:20px;">クラスの先生に聞いた合言葉を入れてね</div>
+    <input id="passcode-input" type="password" placeholder="合言葉" style="
+      width:100%; border:1px solid #ccc9be; border-radius:8px; padding:10px 12px;
+      font-size:15px; font-family:inherit; box-sizing:border-box; margin-bottom:10px;"
+      onkeydown="if(event.key==='Enter') checkPasscode();">
+    <div id="passcode-error" style="display:none; font-size:13px; color:#cc3300; font-weight:600; margin-bottom:10px;"></div>
+    <button id="passcode-btn" onclick="checkPasscode()" style="
+      background:#2563a8; color:#fff; border:none; border-radius:8px;
+      padding:11px 20px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit;
+      width:100%;">はじめる</button>
+  </div>
+</div>
 
 <!-- ===== 名前選択モーダル ===== -->
 <div id="modal-overlay" style="
@@ -3045,7 +3069,38 @@ async function saveStudentList() {
   }
 }
 
-// 初期化：Firebaseが準備できてから名前リストを読み込む
+// クラス共通の合言葉ログイン用（Firebase Authenticationに登録した共有アカウントのメールアドレス）
+const CLASS_LOGIN_EMAIL = '8nenclass@class.com';
+
+function checkPasscode() {
+  const input = document.getElementById('passcode-input');
+  const errorEl = document.getElementById('passcode-error');
+  const btn = document.getElementById('passcode-btn');
+  const word = input.value.trim();
+  if (!word) {
+    errorEl.textContent = '合言葉を入力してください';
+    errorEl.style.display = 'block';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = '確認中…';
+  window._fbSignIn(window._fbAuth, CLASS_LOGIN_EMAIL, word)
+    .then(() => {
+      document.getElementById('passcode-overlay').style.display = 'none';
+      initApp();
+      startLiveFeeds();
+    })
+    .catch(() => {
+      errorEl.textContent = '合言葉が違います。もう一度確認してください。';
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'はじめる';
+      input.value = '';
+      input.focus();
+    });
+}
+
+// 初期化：Firebaseが準備できてから名前リストを読み込む（合言葉ログイン成功後に呼び出される）
 function initApp() {
   if (window._fbDb) {
     loadStudentList();
@@ -3054,7 +3109,6 @@ function initApp() {
     setTimeout(initApp, 100);
   }
 }
-initApp();
 
 // ===== 自動保存（入力が止まって1.5秒後） =====
 const autoSaveTimers = {};
@@ -3833,14 +3887,16 @@ function changeStudent() {
   }
 }
 
-// ===== みんなの意見をリアルタイムで表示（常時起動） =====
-attachLiveTextFeed('livefeed-gas-yoso', 'gas-yoso', 'gas-yoso-text');
-attachLiveTextFeed('livefeed-gas-matome', 'gas-matome', 'gas-matome-text');
-attachLiveTextFeed('livefeed-sol-yoso', 'sol-yoso', 'sol-yoso-text');
-attachLiveTextFeed('livefeed-sol-matome', 'sol-matome', 'sol-matome-text');
-attachLiveTextFeed('livefeed-sta-yoso', 'sta-yoso', 'sta-yoso-text');
-attachLiveTextFeed('livefeed-sta-matome', 'sta-matome', 'sta-matome-text');
-attachLiveGraphFeed('livefeed-graph-g0', 'u7', 'graph-g0-data');
+// ===== みんなの意見をリアルタイムで表示（合言葉ログイン成功後に開始） =====
+function startLiveFeeds() {
+  attachLiveTextFeed('livefeed-gas-yoso', 'gas-yoso', 'gas-yoso-text');
+  attachLiveTextFeed('livefeed-gas-matome', 'gas-matome', 'gas-matome-text');
+  attachLiveTextFeed('livefeed-sol-yoso', 'sol-yoso', 'sol-yoso-text');
+  attachLiveTextFeed('livefeed-sol-matome', 'sol-matome', 'sol-matome-text');
+  attachLiveTextFeed('livefeed-sta-yoso', 'sta-yoso', 'sta-yoso-text');
+  attachLiveTextFeed('livefeed-sta-matome', 'sta-matome', 'sta-matome-text');
+  attachLiveGraphFeed('livefeed-graph-g0', 'u7', 'graph-g0-data');
+}
 </script>
 </body>
 </html>
