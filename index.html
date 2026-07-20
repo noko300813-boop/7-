@@ -124,6 +124,12 @@
   .hl-sol { background: var(--c-sol-bg); border-color: var(--c-sol); color: #0a3328; }
   .hl-amber { background: var(--amber-bg); border-color: #c07a20; color: #4a2d08; }
 
+  /* 分数表示（濃度の式など） */
+  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 5px; line-height: 1.35; font-size: 0.82em; position: relative; top: 0.12em; }
+  .frac .frac-num, .frac .frac-den { padding: 0 6px; white-space: nowrap; }
+  .frac .frac-num { border-bottom: 1.5px solid currentColor; padding-bottom: 2px; }
+  .frac .frac-den { padding-top: 2px; }
+
   .field-label { font-size: 14px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 6px; margin-top: 14px; }
   .field-label:first-child { margin-top: 0; }
   .field-q { font-size: 15px; color: var(--text-sub); margin-bottom: 8px; line-height: 1.7; }
@@ -139,6 +145,22 @@
   .step-chip { display: inline-block; font-size: 14px; font-weight: 600; padding: 4px 13px; border-radius: 99px; margin-bottom: 8px; }
   .chip-gas { background: var(--c-gas-bg); color: var(--c-gas); }
   .chip-sol { background: var(--c-sol-bg); color: var(--c-sol); }
+
+  /* STEP LIST (実験方法などの手順表示) */
+  .step-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .step-item { display: flex; gap: 13px; align-items: flex-start; background: var(--surface2); border: 1px solid var(--border); border-left: 4px solid var(--c-gas); border-radius: 0 var(--radius) var(--radius) 0; padding: 12px 16px; }
+  .step-num { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--c-gas); color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+  .step-item.step-sol { border-left-color: var(--c-sol); }
+  .step-item.step-sol .step-num { background: var(--c-sol); }
+  .step-item.step-amber { border-left-color: #c07a20; }
+  .step-item.step-amber .step-num { background: #c07a20; }
+  .step-item.step-coral { border-left-color: var(--coral); }
+  .step-item.step-coral .step-num { background: var(--coral); }
+  .step-body { flex: 1; padding-top: 3px; }
+  .step-title { font-size: 15.5px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .step-desc { font-size: 15px; color: var(--text-sub); line-height: 1.75; }
+  .step-item + .step-note { margin-top: -4px; }
+  .step-note { font-size: 14px; color: var(--text-muted); background: var(--surface2); border: 1px dashed var(--border-strong); border-radius: var(--radius); padding: 8px 14px; margin-bottom: 14px; }
 
   .tbl-wrap { overflow-x: auto; margin-top: 10px; }
   table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 340px; }
@@ -833,6 +855,20 @@
     <div class="notebook" id="nb-u3">
       <div class="nb-inner">
 
+        <!-- 導入動画 -->
+        <div class="card">
+          <div class="card-head"><span class="badge b-teal">動画</span><span class="card-title">導入動画</span></div>
+          <a href="https://sw121.tsho.jp/07jk/r/1/074/" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none; color:inherit;">
+            <div style="display:flex; align-items:center; gap:10px; padding:10px; border:1px solid #ddd; border-radius:8px;">
+              <div style="width:120px; height:68px; border-radius:6px; background:#333; display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px; flex-shrink:0;">▶</div>
+              <div>
+                <div style="font-weight:bold;">動画を見る</div>
+                <div style="font-size:0.85em; color:#666;">https://sw121.tsho.jp/07jk/r/1/074/</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
         <!-- 課題 -->
         <div class="card">
           <div class="card-head"><span class="badge b-purple">課題</span></div>
@@ -874,27 +910,40 @@
           </div>
 
           <!-- 実験手順イラスト（4ステップ） -->
-          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:10px 0 14px;">
+          <div style="display:grid; grid-template-columns:2fr repeat(3,1fr); gap:8px; margin:10px 0 14px;">
             <div style="background:#f0f8f4; border-radius:8px; padding:8px; text-align:center;">
               <div style="font-size:11px; font-weight:700; color:#0f6e56; margin-bottom:4px;">① 水に入れる</div>
-              <svg viewBox="0 0 80 100" width="100%">
+              <svg viewBox="0 0 160 100" width="100%">
+                <text x="40" y="8" font-size="7" text-anchor="middle" fill="#0f6e56">水100g</text>
+                <text x="40" y="16" font-size="7" text-anchor="middle" fill="#c07840">+コーヒーシュガー5g</text>
                 <rect x="15" y="25" width="50" height="65" rx="3" fill="#c8f0e0" stroke="#5ab090" stroke-width="1.5"/>
                 <rect x="13" y="22" width="54" height="8" rx="2" fill="none" stroke="#5ab090" stroke-width="1.5"/>
                 <rect x="16" y="52" width="48" height="37" fill="#a8dfc8" opacity="0.5"/>
                 <circle cx="40" cy="44" r="6" fill="#c07840"/>
                 <line x1="56" y1="8" x2="46" y2="72" stroke="#888" stroke-width="2"/>
-                <text x="40" y="98" font-size="8" text-anchor="middle" fill="#333">かき混ぜる</text>
+                <text x="120" y="8" font-size="7" text-anchor="middle" fill="#0f6e56">水100g</text>
+                <text x="120" y="16" font-size="7" text-anchor="middle" fill="#888">+デンプン5g</text>
+                <rect x="95" y="25" width="50" height="65" rx="3" fill="#c8f0e0" stroke="#5ab090" stroke-width="1.5"/>
+                <rect x="93" y="22" width="54" height="8" rx="2" fill="none" stroke="#5ab090" stroke-width="1.5"/>
+                <rect x="96" y="52" width="48" height="37" fill="#a8dfc8" opacity="0.5"/>
+                <circle cx="112" cy="45" r="3" fill="#e8ddb0"/>
+                <circle cx="120" cy="48" r="3" fill="#e8ddb0"/>
+                <circle cx="128" cy="43" r="3" fill="#e8ddb0"/>
+                <circle cx="121" cy="53" r="3" fill="#e8ddb0"/>
+                <line x1="136" y1="8" x2="126" y2="72" stroke="#888" stroke-width="2"/>
+                <text x="80" y="98" font-size="8" text-anchor="middle" fill="#333">かき混ぜる</text>
               </svg>
             </div>
             <div style="background:#f0f4fa; border-radius:8px; padding:8px; text-align:center;">
               <div style="font-size:11px; font-weight:700; color:#2563a8; margin-bottom:4px;">② 質量をはかる</div>
               <svg viewBox="0 0 80 100" width="100%">
+                <text x="40" y="8" font-size="7" text-anchor="middle" fill="#0f6e56">水100g</text>
+                <text x="40" y="16" font-size="7" text-anchor="middle" fill="#c07840">+コーヒーシュガー5g</text>
                 <rect x="10" y="62" width="60" height="28" rx="4" fill="#ddd" stroke="#999" stroke-width="1.5"/>
                 <ellipse cx="40" cy="52" rx="22" ry="6" fill="#ccc" stroke="#999" stroke-width="1"/>
                 <rect x="28" y="32" width="24" height="22" rx="2" fill="#c8e8f8" stroke="#5a8fc0" stroke-width="1"/>
                 <rect x="26" y="30" width="28" height="5" rx="1" fill="none" stroke="#5a8fc0" stroke-width="1"/>
                 <text x="40" y="82" font-size="10" text-anchor="middle" fill="#2563a8">105g</text>
-                <text x="40" y="98" font-size="8" text-anchor="middle" fill="#333">前後で変化なし</text>
               </svg>
             </div>
             <div style="background:#fff8f0; border-radius:8px; padding:8px; text-align:center;">
@@ -915,23 +964,39 @@
               <svg viewBox="0 0 80 100" width="100%">
                 <rect x="4" y="30" width="32" height="50" rx="3" fill="#f8e0b0" stroke="#c07840" stroke-width="1.5"/>
                 <rect x="2" y="27" width="36" height="7" rx="2" fill="none" stroke="#c07840" stroke-width="1.5"/>
-                <text x="20" y="72" font-size="7" text-anchor="middle" fill="#c07840">透明・均一</text>
-                <text x="20" y="87" font-size="7" text-anchor="middle" fill="#888">コーヒーシュガー</text>
                 <rect x="44" y="30" width="32" height="50" rx="3" fill="#f0f0e8" stroke="#888" stroke-width="1.5"/>
                 <rect x="42" y="27" width="36" height="7" rx="2" fill="none" stroke="#888" stroke-width="1.5"/>
                 <rect x="45" y="68" width="30" height="10" rx="2" fill="#d0d0c0"/>
-                <text x="60" y="62" font-size="7" text-anchor="middle" fill="#888">白くにごる</text>
-                <text x="60" y="87" font-size="7" text-anchor="middle" fill="#888">デンプン</text>
                 <text x="40" y="18" font-size="13" text-anchor="middle">🌙</text>
               </svg>
             </div>
           </div>
 
-          <div class="proc-box">
-            ❶ コーヒーシュガーとデンプンをそれぞれビーカーに入れ、水の中でガラス棒でよくかき混ぜて、そのようすを観察する。<br>
-            ❷ 水に入れる前と後で全体の質量を電子てんびんではかり、変化があるか確かめる。<br>
-            ❸ それぞれの液をろ過し、ろ紙に残るものがあるか・ろ過した液の色を調べる。また、ろ過した液を蒸発させ残ったものがあるか調べる。<br>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body"><div class="step-desc">コーヒーシュガーとデンプンをそれぞれビーカーに入れ、水の中でガラス棒でよくかき混ぜて、そのようすを観察する。</div></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body"><div class="step-desc">水に入れる前と後で全体の質量を電子てんびんではかり、変化があるか確かめる。</div></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-body"><div class="step-desc">それぞれの液をろ過し、ろ紙に残るものがあるか・ろ過した液の色を調べる。また、ろ過した液を蒸発させ残ったものがあるか調べる。</div></div>
+            </div>
           </div>
+
+          <!-- ろ過のやり方動画 -->
+          <a href="https://sw121.tsho.jp/07jk/r/1/076/" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none; color:inherit; margin:10px 0;">
+            <div style="display:flex; align-items:center; gap:10px; padding:10px; border:1px solid #ddd; border-radius:8px;">
+              <div style="width:120px; height:68px; border-radius:6px; background:#333; display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px; flex-shrink:0;">▶</div>
+              <div>
+                <div style="font-weight:bold;">動画を見る（ろ過のやり方）</div>
+                <div style="font-size:0.85em; color:#666;">https://sw121.tsho.jp/07jk/r/1/076/</div>
+              </div>
+            </div>
+          </a>
 
           <!-- ろ過の方法 -->
           <div style="background:#fff8f0; border:1.5px solid #c07840; border-radius:10px; padding:16px 20px; margin:10px 0;">
@@ -1020,9 +1085,11 @@
             </div>
           </div>
 
-          <div class="proc-box" style="margin-top:10px;">
-            （続き）
-            ❹ それぞれの液を一晩置いて、ようすを観察する。
+          <div class="step-list" style="margin-top:10px;">
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-body"><div class="step-title">（続き）</div><div class="step-desc">それぞれの液を一晩置いて、ようすを観察する。</div></div>
+            </div>
           </div>
 
           <!-- 実験結果表 -->
@@ -1076,6 +1143,12 @@
         <!-- 水溶液の用語・粒子モデル（p.104〜105準拠） -->
         <div class="card">
           <div class="card-head"><span class="badge b-blue">ポイント整理</span><span class="card-title">物質が水にとけるとは</span></div>
+          <div class="info-box" style="margin-bottom:12px;">
+            <strong>💡 ヒント</strong>上の実験結果の表や考察で書いたことを思い出そう。<br>
+            ・①水に入れたときの液は、透明だった？にごっていた？<br>
+            ・③ろ過した後、ろ紙に何か残った？ろ液の色は？<br>
+            ・④一晩置いた後、液は上と下で分かれていた？それとも均一だった？
+          </div>
           <div class="highlight hl-sol">物質が水にとけると、次の状態になる。<br>
             ① 液が
             <select class="quiz-select" data-answer="透明" onchange="checkQuiz(this)">
@@ -1102,9 +1175,50 @@
             </select>
             。<span class="quiz-result"></span>
           </div>
+        </div>
+
+        <!-- 粒子モデルで考える -->
+        <div class="card" style="border:2px solid #c07840; background:#fffaf0;">
+          <div class="card-head"><span class="badge b-amber">考えてみよう</span><span class="card-title">粒子のモデルで考えよう</span></div>
+          <div class="field-label" style="margin-top:0;">考えてみよう：「粒子」の考え方で説明できる？</div>
+          <div class="field-q">
+            物質は、目に見えないほど小さな「粒子」の集まりでできている、と考えてみよう（顕微鏡を使っても直接は見えない）。<br>
+            この考え方を使うと、さっきの実験でわかった次の4つのことを、それぞれどう説明できるだろうか。まずは自分の力で考えてみよう。
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>実験でわかったこと</th><th>粒子の考え方で説明すると？</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="lbl">① 液が透明になった</td>
+                <td><textarea class="sm" placeholder="自分の考えを書いてみよう"></textarea></td>
+              </tr>
+              <tr>
+                <td class="lbl">② 質量が変わらなかった</td>
+                <td><textarea class="sm" placeholder="自分の考えを書いてみよう"></textarea></td>
+              </tr>
+              <tr>
+                <td class="lbl">③ ろ紙を通り抜けた</td>
+                <td><textarea class="sm" placeholder="自分の考えを書いてみよう"></textarea></td>
+              </tr>
+              <tr>
+                <td class="lbl">④ 一晩たっても均一のまま</td>
+                <td><textarea class="sm" placeholder="自分の考えを書いてみよう"></textarea></td>
+              </tr>
+            </tbody>
+          </table></div>
+          <div class="field-label">粒子のモデルで説明しよう</div>
+          <button type="button" class="answer-toggle-btn" onclick="toggleAnswer('u3-particle-model-ans')">答えを見る</button>
+          <div id="u3-particle-model-ans" class="answer-box" style="display:none;">
+            <strong>💡 解答例</strong><br>
+            ● 透明になった　→　粒子が小さすぎて光をさえぎらないから<br>
+            ● 質量が変わらなかった　→　粒子は消えたのではなく、そのまま水の中に広がっただけだから<br>
+            ● ろ紙を通り抜けた　→　粒子はろ紙のすき間よりずっと小さいから<br>
+            ● 一晩置いても均一のまま　→　粒子が水の中に一様に広がったままだから<br><br>
+            自分の考えと比べてみよう。このように、一つの「粒子」というモデルで、バラバラに見えた4つの事実をまとめて説明できる。理科では、目に見えないものをこうした「モデル（考え方の模型）」を使って考える。
+          </div>
           <div style="margin: 10px 0 14px;">
             <div style="font-size:13px; font-weight:700; color:#0f6e56; margin-bottom:6px;">🔵 粒子のモデルで説明しよう</div>
-            <div style="font-size:13px; color:#5a5852; margin-bottom:10px;">それぞれのビーカーの中をクリックして、砂糖の粒子（●）を置いてみよう。時間が経つにつれて粒子がどう変化するか考えながら配置しよう。</div>
+            <div style="font-size:13px; color:#5a5852; margin-bottom:10px;">自分やクラスの考えをふまえて、それぞれのビーカーの中をクリックして、砂糖の粒子（●）を置いてみよう。時間が経つにつれて粒子がどう変化するか考えながら配置しよう。</div>
             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; background:#f9f8f5; border-radius:8px; border:1px solid #e2e0d8; padding:14px;">
 
               <!-- ビーカー① 入れた直後 -->
@@ -1158,6 +1272,21 @@
             <input type="hidden" id="particles-p3-data" value="">
             <div class="field-label" style="margin-top:10px;">なぜそのように粒子を配置したのか、理由を説明しよう</div>
             <textarea class="sm" placeholder="①→②→③でどんな順番に粒子を置いた？粒子の数は変わった？広がり方はどう変わった？なぜそう考えたのか説明しよう..."></textarea>
+            <div class="field-label" style="margin-top:10px;">自分が置いた粒子モデルは、実験でわかったこと（透明になった・質量が変わらない・ろ紙を通り抜けた・一晩たっても均一）をきちんと説明できているか、確かめてみよう</div>
+            <textarea class="sm" placeholder="説明できていないところがあれば、粒子の置き方を直してみよう..."></textarea>
+          </div>
+        </div>
+
+        <!-- 用語整理 -->
+        <div class="card">
+          <div class="card-head"><span class="badge b-blue">整理</span><span class="card-title">溶質・溶媒・溶液・水溶液</span></div>
+          <div class="field-label" style="margin-top:0;">用語を整理しよう</div>
+          <div class="highlight hl-sol" style="margin-bottom:10px;">
+            物質が水にとけた液を考えるとき、次の4つの言葉を区別して使う。<strong>砂糖水</strong>を例にすると…<br><br>
+            ● <strong>溶質（ようしつ）</strong>：とけている物質　→　砂糖<br>
+            ● <strong>溶媒（ようばい）</strong>：とかしている液体　→　水<br>
+            ● <strong>溶液（ようえき）</strong>：溶質が溶媒にとけた液全体　→　砂糖水<br>
+            ● <strong>水溶液</strong>：溶媒が水である溶液　→　砂糖水（水にとかしたものなので水溶液でもある）
           </div>
           <div class="field-label">下の語句から正しいものを選んで、文を完成させよう</div>
           <div class="tbl-wrap"><table>
@@ -1263,14 +1392,14 @@
         <div class="card">
           <div class="card-head"><span class="badge b-amber">計算</span><span class="card-title">質量パーセント濃度</span></div>
           <div class="highlight hl-amber">
-            <strong>質量パーセント濃度(%) = 溶質の質量(g) ÷ 溶液の質量(g) × 100</strong><br>
+            <strong>質量パーセント濃度(%) = <span class="frac"><span class="frac-num">溶質の質量(g)</span><span class="frac-den">溶液の質量(g)</span></span> × 100</strong><br>
             <span style="font-size:13px; color:#4a2d08;">溶液の質量 = 溶質の質量 + 溶媒（水）の質量</span>
           </div>
           <!-- 例題（教科書p.106準拠） -->
           <div class="field-label">例題（教科書 p.106）</div>
           <div class="proc-box" style="margin-bottom:12px;">
-            <strong>砂糖水A</strong>：砂糖90g、水410g &nbsp;→&nbsp; 濃度 = 90 ÷ (90+410) × 100 = <strong>18%</strong><br>
-            <strong>砂糖水B</strong>：砂糖75g、水300g &nbsp;→&nbsp; 濃度 = 75 ÷ (75+300) × 100 = <strong>20%</strong>
+            <strong>砂糖水A</strong>：砂糖90g、水410g &nbsp;→&nbsp; 濃度 = <span class="frac"><span class="frac-num">90</span><span class="frac-den">90+410</span></span> × 100 = <strong>18%</strong><br>
+            <strong>砂糖水B</strong>：砂糖75g、水300g &nbsp;→&nbsp; 濃度 = <span class="frac"><span class="frac-num">75</span><span class="frac-den">75+300</span></span> × 100 = <strong>20%</strong>
           </div>
           <div class="grid2">
             <div>
@@ -1280,9 +1409,9 @@
               <button type="button" class="answer-toggle-btn" onclick="toggleAnswer('u3-conc-ans1')">答えを見る</button>
               <div id="u3-conc-ans1" class="answer-box" style="display:none;">
                 <strong>考え方</strong><br>
-                質量パーセント濃度は「溶質（とけているもの）の質量 ÷ 溶液（水溶液）全体の質量 × 100」で求める。溶液の質量は、食塩と水を合わせた質量になる。<br><br>
+                質量パーセント濃度は「<span class="frac"><span class="frac-num">溶質（とけているもの）の質量</span><span class="frac-den">溶液（水溶液）全体の質量</span></span> × 100」で求める。溶液の質量は、食塩と水を合わせた質量になる。<br><br>
                 溶液の質量 = 12g（食塩）+ 68g（水）= 80g<br>
-                濃度 = 12 ÷ 80 × 100 = <strong>15%</strong>
+                濃度 = <span class="frac"><span class="frac-num">12</span><span class="frac-den">80</span></span> × 100 = <strong>15%</strong>
               </div>
             </div>
             <div>
@@ -1474,15 +1603,35 @@
             </div>
           </div>
 
-          <div class="proc-box" style="font-size:17px; line-height:2.1;">
-            <strong>ステップ① 物質をとかす</strong><br>
-            A の試験管に食塩（塩化ナトリウム）3g、B の試験管に硝酸カリウム3gをそれぞれとり、水5cm³（メスシリンダーで量る）をそれぞれ加え、よく混ぜる。<br><br>
-            <strong>ステップ② 熱してとかす</strong><br>
-            A・B の試験管をお湯で湯せん加熱する。温度計をさし、水の温度がそろうようにガラス棒でかき混ぜる。とけ残りがふえるかを確認する（ときどき試験管をとり出して確認）。<br><br>
-            <strong>ステップ③ 冷やす</strong><br>
-            A・B の試験管を水で冷やして、中のようすを観察する。<br><br>
-            <strong>ステップ④ とけていた物質を観察する</strong><br>
-            A・B の試験管から水溶液を1滴ずつスライドガラスにとり、かわかしてから、顕微鏡やルーペで観察し、スケッチする。
+          <div class="step-list">
+            <div class="step-item step-sol">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-title">物質をとかす</div>
+                <div class="step-desc">A の試験管に食塩（塩化ナトリウム）3g、B の試験管に硝酸カリウム3gをそれぞれとり、水5cm³（メスシリンダーで量る）をそれぞれ加え、よく混ぜる。</div>
+              </div>
+            </div>
+            <div class="step-item step-sol">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-title">熱してとかす</div>
+                <div class="step-desc">A・B の試験管をお湯で湯せん加熱する。温度計をさし、水の温度がそろうようにガラス棒でかき混ぜる。とけ残りがふえるかを確認する（ときどき試験管をとり出して確認）。</div>
+              </div>
+            </div>
+            <div class="step-item step-sol">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-title">冷やす</div>
+                <div class="step-desc">A・B の試験管を水で冷やして、中のようすを観察する。</div>
+              </div>
+            </div>
+            <div class="step-item step-sol">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <div class="step-title">とけていた物質を観察する</div>
+                <div class="step-desc">A・B の試験管から水溶液を1滴ずつスライドガラスにとり、かわかしてから、顕微鏡やルーペで観察し、スケッチする。</div>
+              </div>
+            </div>
           </div>
 
           <!-- 実験結果表（教科書p.110の表に準拠） -->
@@ -2007,17 +2156,32 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 14px;">
             <div style="background:#fff8f0;border-radius:8px;padding:12px;">
               <div style="font-size:14px;font-weight:700;color:#7a4b0a;margin-bottom:8px;">ステップ①　液体のロウの体積と質量</div>
-              <div style="font-size:16px;color:#3a3833;line-height:1.9;">
-                ❶ 細かくくだいたロウをビーカーに入れ、質量をはかる。<br>
-                ❷ ガスバーナーで加熱し、ロウを液体にする。液面の高さに印をつけ、ビーカーごと質量をはかる。
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                  <div style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#c07a20;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">1</div>
+                  <div style="font-size:15px;color:#3a3833;line-height:1.6;padding-top:1px;">細かくくだいたロウをビーカーに入れ、質量をはかる。</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                  <div style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#c07a20;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">2</div>
+                  <div style="font-size:15px;color:#3a3833;line-height:1.6;padding-top:1px;">ガスバーナーで加熱し、ロウを液体にする。液面の高さに印をつけ、ビーカーごと質量をはかる。</div>
+                </div>
               </div>
             </div>
             <div style="background:#f0f4fa;border-radius:8px;padding:12px;">
               <div style="font-size:14px;font-weight:700;color:#2563a8;margin-bottom:8px;">ステップ②　固体のロウの体積と質量</div>
-              <div style="font-size:16px;color:#3a3833;line-height:1.9;">
-                ❸ ビーカーをゆっくり冷やし、ロウを固体にする。<br>
-                ❹ 固まったロウのようすをスケッチし、体積の変化を比べる。<br>
-                ❺ ビーカーごと固体のロウの質量をはかる。
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                  <div style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#2563a8;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">3</div>
+                  <div style="font-size:15px;color:#3a3833;line-height:1.6;padding-top:1px;">ビーカーをゆっくり冷やし、ロウを固体にする。</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                  <div style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#2563a8;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">4</div>
+                  <div style="font-size:15px;color:#3a3833;line-height:1.6;padding-top:1px;">固まったロウのようすをスケッチし、体積の変化を比べる。</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                  <div style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#2563a8;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">5</div>
+                  <div style="font-size:15px;color:#3a3833;line-height:1.6;padding-top:1px;">ビーカーごと固体のロウの質量をはかる。</div>
+                </div>
               </div>
             </div>
           </div>
@@ -2043,13 +2207,19 @@
         <!-- 調べよう：エタノールの体積変化 -->
         <div class="card">
           <div class="card-head"><span class="badge b-teal">調べよう</span><span class="card-title">エタノールをあたためたときの体積の変化を調べよう</span></div>
-          <div class="proc-box" style="font-size:16px; line-height:2.1;">
-            <strong>① ふくろに入れる</strong><br>
-            ポリエチレンのふくろに少量のエタノールを入れて、ふくろの口を閉じる。<br><br>
-            <strong>② 湯をかける</strong><br>
-            ポリエチレンのふくろをバットに入れて、ふくろに湯をかける。<br><br>
-            <strong>③ ようすを観察する</strong><br>
-            ふくろのふくらみ方や、ふくろの中のエタノールのようすを観察する。
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body"><div class="step-title">ふくろに入れる</div><div class="step-desc">ポリエチレンのふくろに少量のエタノールを入れて、ふくろの口を閉じる。</div></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body"><div class="step-title">湯をかける</div><div class="step-desc">ポリエチレンのふくろをバットに入れて、ふくろに湯をかける。</div></div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-body"><div class="step-title">ようすを観察する</div><div class="step-desc">ふくろのふくらみ方や、ふくろの中のエタノールのようすを観察する。</div></div>
+            </div>
           </div>
           <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:10px 0 14px;">
             <div style="background:#eef4fb; border-radius:8px; padding:8px; text-align:center;">
@@ -2491,14 +2661,28 @@
             </svg>
           </div>
 
-          <div class="proc-box">
-            <strong>ステップ① 混合物を熱して出てきた液体を集める</strong><br>
-            枝つきフラスコを組み立て、エタノール3cm³と水17cm³の混合物を弱火で熱する。出てきた液体を約2cm³ずつ3本の試験管に集め、加熱している間、熱した時間と温度を記録する。<br><br>
-            <strong>ステップ② 出てきた液体を調べる</strong><br>
-            試験管にたまった液体が冷えてから、それぞれの性質を調べる。<br>
-            ・においを調べる　・液体にひたした紙に火をつける<br><br>
-            <strong>ステップ③ 温度変化をグラフに表す</strong><br>
-            記録した温度変化をグラフに表す。
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-title">混合物を熱して出てきた液体を集める</div>
+                <div class="step-desc">枝つきフラスコを組み立て、エタノール3cm³と水17cm³の混合物を弱火で熱する。出てきた液体を約2cm³ずつ3本の試験管に集め、加熱している間、熱した時間と温度を記録する。</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-title">出てきた液体を調べる</div>
+                <div class="step-desc">試験管にたまった液体が冷えてから、それぞれの性質を調べる。<br>・においを調べる　・液体にひたした紙に火をつける</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-title">温度変化をグラフに表す</div>
+                <div class="step-desc">記録した温度変化をグラフに表す。</div>
+              </div>
+            </div>
           </div>
           <div class="field-label">実験結果①：温度の記録</div>
           <div class="tbl-wrap"><table>
