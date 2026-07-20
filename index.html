@@ -192,6 +192,16 @@
   .livefeed-name { font-weight: 700; color: #2563a8; font-size: 12px; display: block; margin-bottom: 2px; }
   .livefeed-empty { font-size: 13px; color: #908d84; }
 
+  /* 粒子モデルの共有（小さいサムネイル表示） */
+  .particle-feed-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .particle-feed-item { display: inline-flex; flex-direction: column; align-items: center; width: 108px; }
+  .particle-feed-beakers { display: flex; gap: 3px; }
+  .particle-feed-beakers svg { width: 32px; height: auto; background: #fff; border: 1px solid #ddd; border-radius: 4px; flex-shrink: 0; }
+  .particle-feed-name { font-size: 10.5px; color: #5a5852; margin-top: 3px; max-width: 108px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+  .particle-feed-item-me { order: -1; }
+  .particle-feed-item-me .particle-feed-beakers svg { border-color: var(--c-sol); border-width: 2px; }
+  .particle-feed-item-me .particle-feed-name { color: var(--c-sol); font-weight: 700; }
+
   .info-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
   .info-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; font-size: 15px; color: var(--text-sub); line-height: 1.75; }
   .info-box strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 4px; }
@@ -1274,6 +1284,17 @@
             <textarea class="sm" placeholder="①→②→③でどんな順番に粒子を置いた？粒子の数は変わった？広がり方はどう変わった？なぜそう考えたのか説明しよう..."></textarea>
             <div class="field-label" style="margin-top:10px;">自分が置いた粒子モデルは、実験でわかったこと（透明になった・質量が変わらない・ろ紙を通り抜けた・一晩たっても均一）をきちんと説明できているか、確かめてみよう</div>
             <textarea class="sm" placeholder="説明できていないところがあれば、粒子の置き方を直してみよう..."></textarea>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:10px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:10px 14px;">
+            <span id="u3-particle-share-status" style="font-size:12.5px; color:#908d84;">①〜③すべてのビーカーに粒子を置いたら、共有ボタンを押そう</span>
+            <div style="display:flex; gap:8px; flex-shrink:0;">
+              <button type="button" onclick="shareParticleModel('u3', ['p1','p2','p3'])" style="font-size:13px; padding:7px 16px; border:none; border-radius:99px; background:var(--c-sol); color:#fff; font-weight:600; cursor:pointer; font-family:inherit;">📤 共有する</button>
+              <button type="button" onclick="unshareParticleModel('u3')" style="font-size:12px; padding:7px 14px; border:1px solid #e0a0a0; border-radius:99px; background:#fff0f0; color:#cc3300; cursor:pointer; font-family:inherit;">🗑️ 共有を取り消す</button>
+            </div>
+          </div>
+          <div class="livefeed" style="margin-top:14px;">
+            <div class="livefeed-header"><span class="livefeed-dot"></span>👥 みんなの粒子モデル（リアルタイム）</div>
+            <div id="livefeed-particles-u3"><div class="livefeed-empty">読み込み中...</div></div>
           </div>
         </div>
 
@@ -2862,10 +2883,13 @@ function switchUnit(ch, unit) {
     btn.className = 'unit-card' + edge + (u === unit ? ' active-' + ch : '');
   });
   // ノート表示切り替え
-  chapterUnits[ch].forEach(u => {
-    const nb = document.getElementById('nb-' + u);
-    if (nb) nb.classList.toggle('active', u === unit);
-  });
+  // 章をまたいで切り替えたときに、以前の章のノートに"active"が残ってしまうと、
+  // document.querySelector('.notebook.active') が正しい単元を拾えず、
+  // 自動保存（特に粒子モデルなど）が別の単元に保存されてしまうバグになる。
+  // それを防ぐため、いったん全ノートのactiveを外してから、該当ノートだけを表示する。
+  document.querySelectorAll('.notebook').forEach(nb => nb.classList.remove('active'));
+  const targetNb = document.getElementById('nb-' + unit);
+  if (targetNb) targetNb.classList.add('active');
 }
 
 // ===== グラフ：クリックでプロット =====
@@ -3130,6 +3154,7 @@ async function loadStudentList() {
 // 生徒を選択してデータ読み込み
 async function selectStudent(name) {
   currentStudentName = name;
+  refreshAllParticleFeeds(); // 名前切り替え直後に、粒子モデル共有の状態表示・一覧を新しい生徒の視点で再計算する
   document.getElementById('modal-overlay').style.display = 'none';
   document.getElementById('current-student-name').textContent = name;
   await loadAllFromFirebase(name);
@@ -3216,6 +3241,39 @@ function clearOwnAnswer(fieldId) {
   triggerAutoSaveForCurrentUnit();
 }
 
+// 粒子モデルを手動で共有する（①〜③のビーカーをセットにして、押したときだけクラスに公開する）
+async function shareParticleModel(unit, beakerIds) {
+  if (!currentStudentName) { alert('名前が選択されていません'); return; }
+  const incomplete = beakerIds.some(id => !particleHistory[id] || particleHistory[id].length === 0);
+  if (incomplete) {
+    alert('①〜③すべてのビーカーに粒子を置いてから、共有ボタンを押してください。');
+    return;
+  }
+  try {
+    const db = window._fbDb;
+    const safeName = currentStudentName.replace(/[.#$/\[\]]/g, '_');
+    const data = {};
+    beakerIds.forEach(id => { data[id] = JSON.stringify(particleHistory[id]); });
+    data.sharedAt = Date.now();
+    await window._fbSet(window._fbRef(db, 'shared_particles/' + unit + '/' + safeName), data);
+  } catch(e) {
+    alert('共有に失敗しました。もう一度お試しください。');
+  }
+}
+
+// 共有した粒子モデルを取り消す（自分のビーカーの中身はそのまま残る）
+async function unshareParticleModel(unit) {
+  if (!currentStudentName) { alert('名前が選択されていません'); return; }
+  if (!confirm('共有した粒子モデルをクラスの画面から消します。自分のビーカーの中身は残ります。よろしいですか？')) return;
+  try {
+    const db = window._fbDb;
+    const safeName = currentStudentName.replace(/[.#$/\[\]]/g, '_');
+    await window._fbSet(window._fbRef(db, 'shared_particles/' + unit + '/' + safeName), null);
+  } catch(e) {
+    alert('取り消しに失敗しました。もう一度お試しください。');
+  }
+}
+
 function escapeHtmlForFeed(str) {
   const div = document.createElement('div');
   div.textContent = str;
@@ -3285,6 +3343,71 @@ function attachLiveGraphFeed(containerId, unit, key) {
       <div style="margin-top:8px; line-height:1.9;">${legend}</div>
     `;
   });
+}
+
+// 粒子モデルの共有（各生徒の配置を小さいサムネイルでリアルタイム表示）
+// 生徒名の切り替え（selectStudent/changeStudent）だけではFirebaseのonValueは再発火しないため、
+// 最新のスナップショットをキャッシュしておき、名前が変わったらそのキャッシュを使って再描画する。
+const particleFeedState = {};
+
+function attachLiveParticleFeed(containerId, unit, keys, viewBox, statusElId) {
+  particleFeedState[containerId] = { unit, keys, viewBox, statusElId, lastSnapshotVal: null };
+  const sharedRef = window._fbRef(window._fbDb, 'shared_particles/' + unit);
+  window._fbOnValue(sharedRef, (snapshot) => {
+    particleFeedState[containerId].lastSnapshotVal = snapshot.exists() ? snapshot.val() : {};
+    renderParticleFeed(containerId);
+  });
+}
+
+// 現在の currentStudentName を基準に、キャッシュ済みスナップショットから再描画する
+function renderParticleFeed(containerId) {
+  const state = particleFeedState[containerId];
+  if (!state) return;
+  const { keys, viewBox, statusElId } = state;
+  const all = state.lastSnapshotVal || {};
+  const el = document.getElementById(containerId);
+  const statusEl = statusElId ? document.getElementById(statusElId) : null;
+  const mySafeName = currentStudentName ? currentStudentName.replace(/[.#$/\[\]]/g, '_') : null;
+
+  // 自分がすでに共有済みかどうかをボタン付近の表示に反映する
+  if (statusEl) {
+    if (mySafeName && all[mySafeName]) {
+      statusEl.textContent = '✅ 共有済みです（下のみんなの一覧にも表示されています。もう一度押すと最新の内容に更新されます）';
+      statusEl.style.color = '#0f6e56';
+    } else {
+      statusEl.textContent = '①〜③すべてのビーカーに粒子を置いたら、共有ボタンを押そう';
+      statusEl.style.color = '#908d84';
+    }
+  }
+
+  if (!el) return;
+  let html = '';
+  let count = 0;
+  Object.entries(all).forEach(([safeName, data]) => {
+    const name = safeName.replace(/_/g, ' ');
+    const isMe = !!(mySafeName && safeName === mySafeName);
+    let beakersHtml = '';
+    let hasAny = false;
+    keys.forEach(key => {
+      const raw = data[key];
+      let pts = [];
+      try { pts = raw ? JSON.parse(raw) : []; } catch(e) { pts = []; }
+      if (pts.length > 0) hasAny = true;
+      const dots = pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="6" fill="#f0b840" stroke="#c07820" stroke-width="1"/>`).join('');
+      beakersHtml += `<svg viewBox="${viewBox}">${dots}</svg>`;
+    });
+    if (!hasAny) return;
+    count++;
+    const itemClass = isMe ? 'particle-feed-item particle-feed-item-me' : 'particle-feed-item';
+    const displayName = isMe ? escapeHtmlForFeed(name) + '（自分）' : escapeHtmlForFeed(name);
+    html += `<div class="${itemClass}"><div class="particle-feed-beakers">${beakersHtml}</div><div class="particle-feed-name">${displayName}</div></div>`;
+  });
+  el.innerHTML = count > 0 ? `<div class="particle-feed-grid">${html}</div>` : '<div class="livefeed-empty">まだ共有された粒子モデルがありません</div>';
+}
+
+// 生徒名が切り替わったときに、登録済みの全ての粒子モデルフィードを再描画する
+function refreshAllParticleFeeds() {
+  Object.keys(particleFeedState).forEach(containerId => renderParticleFeed(containerId));
 }
 
 // Firebaseにデータ保存
@@ -3396,6 +3519,18 @@ function setupAutoSave() {
       autoSaveTimers[unit] = setTimeout(() => {
         autoSaveUnit(unit);
       }, 1500);
+    });
+  });
+
+  // タブを閉じる／リロードするときに、1.5秒の自動保存待ちだった変更（粒子モデルの配置など）が
+  // 消えてしまわないよう、保存待ちのユニットがあればその場ですぐ保存を試みる
+  window.addEventListener('beforeunload', () => {
+    if (!currentStudentName) return;
+    Object.keys(autoSaveTimers).forEach(unit => {
+      if (autoSaveTimers[unit]) {
+        clearTimeout(autoSaveTimers[unit]);
+        autoSaveUnit(unit);
+      }
     });
   });
 }
@@ -4135,7 +4270,18 @@ async function loadAllItems() {
 // 生徒変更ボタン
 function changeStudent() {
   if (confirm('名前の選択画面に戻りますか？（保存されていない変更は失われます）')) {
+    // 粒子モデルなどを置いた直後（1.5秒の自動保存待ちの間）に名前を切り替えると、
+    // currentStudentNameが空になった状態で保存タイマーが発火してしまい、直前の変更が消えてしまう。
+    // それを防ぐため、名前を消す前に保存待ちのユニットがあれば今すぐ保存してしまう。
+    Object.keys(autoSaveTimers).forEach(unit => {
+      if (autoSaveTimers[unit]) {
+        clearTimeout(autoSaveTimers[unit]);
+        autoSaveTimers[unit] = null;
+        autoSaveUnit(unit);
+      }
+    });
     currentStudentName = null;
+    refreshAllParticleFeeds(); // 名前を外した状態にも粒子モデル共有の表示を合わせて更新する
     document.getElementById('current-student-name').textContent = '-';
     // フォームをリセット
     ['gas-yoso','u1','u2','gas-matome','sol-yoso','u3','u4','sol-matome','sta-yoso','u5','u6','u7','sta-matome'].forEach(unit => {
@@ -4162,6 +4308,7 @@ function startLiveFeeds() {
   attachLiveTextFeed('livefeed-sta-yoso', 'sta-yoso', 'sta-yoso-text');
   attachLiveTextFeed('livefeed-sta-matome', 'sta-matome', 'sta-matome-text');
   attachLiveGraphFeed('livefeed-graph-g0', 'u7', 'graph-g0-data');
+  attachLiveParticleFeed('livefeed-particles-u3', 'u3', ['p1','p2','p3'], '0 0 140 150', 'u3-particle-share-status');
 }
 </script>
 </body>
